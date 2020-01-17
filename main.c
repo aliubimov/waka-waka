@@ -1,5 +1,6 @@
 #define _DEFAULT_SOURCE
 
+#include <stdlib.h>
 #include <SDL2/SDL.h>
 #include "lvgl/lvgl.h"
 #include "lv_drivers/display/monitor.h"
@@ -34,6 +35,7 @@ int main() {
 
     while(1) {
         lv_task_handler();
+        SDL_Delay(5 * 1000);
     }
 
     return 0;

@@ -29,6 +29,8 @@ int main() {
 
     lv_label_set_text(label, "hi!!");
 
+    lv_obj_t *keyboard = lv_kb_create(lv_disp_get_scr_act(NULL), NULL);
+
 
     while(1) {
         lv_task_handler();

@@ -51,19 +51,17 @@ int main() {
     init_display();
     init_mouse();
 
-//    lv_obj_t *label = lv_ta_create(lv_disp_get_scr_act(NULL), NULL);
-//    lv_obj_t *keyboard = lv_kb_create(lv_disp_get_scr_act(NULL), NULL);
-
-//    lv_kb_set_ta(keyboard, label);
-
 
     lv_theme_t *th = lv_theme_alien_init(210, NULL);
     lv_theme_set_current(th);
 
     lv_style_copy(&page_style, th->style.bg);
 
+    page_style.body.opa = LV_OPA_TRANSP;
     page_style.body.border.width = 0;
     page_style.body.border.opa= LV_OPA_TRANSP;;
+
+    page_style.text.opa = LV_OPA_COVER;
 
     lv_obj_t *scr = lv_obj_create(NULL, NULL);
     lv_scr_load(scr);

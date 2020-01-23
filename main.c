@@ -77,12 +77,13 @@ int main() {
     for (int i = 0; i < 100; i++) 
     {
         char str[3];
-        sprintf(str, "%d",i);
+        sprintf(str, "recevied msg %d",i);
 
         lv_obj_t *lbl = lv_label_create(page, NULL);
         lv_obj_set_width(lbl, lv_page_get_fit_width(page));
 
         lv_label_set_text(lbl, str);
+        lv_page_focus(page, lbl, LV_ANIM_OFF);
     };
 
 

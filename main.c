@@ -15,7 +15,6 @@ static lv_disp_buf_t disp_buf1;
 static lv_color_t buf1_1[480*10];
 static lv_indev_drv_t indev_drv;
 
-
 static lv_style_t page_style;
 
 
@@ -26,6 +25,7 @@ void init_display() {
 
     lv_disp_drv_t disp_drv;
     lv_disp_drv_init(&disp_drv);
+
 
     disp_drv.buffer = &disp_buf1;
     disp_drv.flush_cb = monitor_flush;
@@ -69,8 +69,20 @@ int main() {
     lv_obj_t *page = lv_page_create(scr, NULL);
     lv_page_set_scrl_layout(page, LV_LAYOUT_COL_L);
     lv_obj_set_style(page, &page_style);
-    lv_obj_set_size(page, lv_obj_get_width(scr), lv_obj_get_height(scr));
-    lv_obj_align(page, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+    lv_obj_set_size(page, lv_obj_get_width(scr), lv_obj_get_height(scr) - 40);
+    lv_obj_align(page, scr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+
+
+    lv_obj_t *input = lv_ta_create(scr, NULL);
+    lv_ta_set_one_line(input, true);
+    lv_ta_set_cursor_type(input, LV_CURSOR_HIDDEN);
+    lv_ta_set_placeholder_text(input, "Write message");
+    lv_ta_set_text(input, "");
+
+    lv_obj_set_width(input, lv_obj_get_width(scr) - 12);
+    lv_obj_align(input, scr, LV_ALIGN_IN_BOTTOM_MID, 0, -2);
+
+
 
     for (int i = 0; i < 100; i++) 
     {

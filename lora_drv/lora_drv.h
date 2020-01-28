@@ -2,7 +2,7 @@
  * LORA Driver
  */
 
-#ifndef LORA_DEV_INCLUDED
+#ifndef LORA_DRV_INCLUDED
 #define LORA_DRV_INCLUDED
 
 
@@ -19,15 +19,16 @@
 #define LORA_OP_MODE_FSTX               0x02
 #define LORA_OP_MODE_TX                 0x03
 #define LORA_OP_MODE_FSRX               0x04
-#define LORA_OP_MODE_RX                 0x05
-#define LORA_OP_MODE_RX_CONT            0x06
+#define LORA_OP_MODE_RX_CONT            0x05
+#define LORA_OP_MODE_RX                 0x06
 #define LORA_OP_MODE_CAD                0x07
 
 #define LORA_REG_FIFO                   0x00
-#define LORA_REG_FIFO_ADDR_PTR          0x0e
+#define LORA_REG_FIFO_ADDR_PTR          0x0d
 #define LORA_REG_FIFO_RX_BASE_ADDR      0x0e
 #define LORA_REG_FIFO_TX_BASE_ADDR      0x0f
 #define LORA_REG_FIFO_RX_ADDR           0x25
+#define LORA_REG_FIFO_RX_CURRENT_ADDR   0x10
 
 #define LORA_REG_PAYLOAD_LENGTH         0x22
 #define LORA_REG_RX_NB_BYTES            0x13        // Number of payload bytes of latest packet received
@@ -49,7 +50,8 @@ typedef enum lora_result
     lrTimeout
 } lora_result_t;
 
-typedef struct lora_dev 
+
+typedef struct lora_dev
 {
     void (*write_reg8)(uint8_t reg, uint8_t data);
     void (*write_reg_dma)(uint8_t reg, uint8_t *data, size_t size);
@@ -63,8 +65,10 @@ typedef struct lora_tx_request
     size_t size;   // size of data to transfer
 } lora_tx_request_t;
 
+
+
 /*
- * Initialize LoRA device
+ * Initialize LoRA device and switch it to STANDBY mode.
  */
 lora_result_t lora_init(const lora_dev_t *dev);
 
@@ -81,8 +85,10 @@ lora_result_t lora_enable(const lora_dev_t *dev);
 lora_result_t lora_disable(const lora_dev_t *dev);
 
 
-
 lora_result_t lora_send(const lora_dev_t *dev, lora_tx_request_t *req);
+
+
+lora_result_t lora_receive(const lora_dev_t *dev);
 
 
 #endif

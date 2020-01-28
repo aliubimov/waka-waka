@@ -19,9 +19,9 @@ void write_16(uint16_t addr, uint8_t data)
     buf[2] = data & 0x00ff;
 
 
-//    PinLow(ctx, CS);
-//    Write(ctx, (char*) &buf, 3);
-//    PinHigh(ctx, CS);
+    PinLow(ctx, CS);
+    Write(ctx, (char*) &buf, 3);
+    PinHigh(ctx, CS);
 
 }
 
@@ -43,14 +43,13 @@ void write(uint8_t addr, uint8_t data)
 
 uint8_t read(uint8_t addr) 
 {
-//    PinLow(ctx, CS);
-//    Write(ctx, (char*) &addr, 1);
+    PinLow(ctx, CS);
+    Write(ctx, (char*) &addr, 1);
 
-//    uint8_t res = (uint8_t) *(Read(ctx, 1));
-//    PinHigh(ctx, CS);
+    uint8_t res = (uint8_t) *(Read(ctx, 1));
+    PinHigh(ctx, CS);
 
-//    return res;
-    return 0;
+    return res;
 }
 
 
@@ -75,8 +74,11 @@ int main()
     };
 
 
-    lora_send(&dev, &tx);
-    printf("status: %x\n", read(0x01));
+//    lora_send(&dev, &tx);
 
+    while (true) {
+        lora_receive(&dev);
+
+    }
     return 0;
 }

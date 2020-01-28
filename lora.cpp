@@ -27,7 +27,7 @@ void write_16(uint16_t addr, uint8_t data)
 
 void write(uint8_t addr, uint8_t data)
 {
-    printf("W: %x, %x\n", addr, data);
+//    printf("W: %x, %x\n", addr, data);
 
     char buf[2];
     memset(&buf, 0, sizeof(buf));
@@ -74,11 +74,12 @@ int main()
     };
 
 
-//    lora_send(&dev, &tx);
 
+    
     while (true) {
-        lora_receive(&dev);
-
+//        lora_receive(&dev);
+        lora_send(&dev, &tx);
     }
+
     return 0;
 }

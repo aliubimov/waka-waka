@@ -25,8 +25,8 @@
 
 #define LORA_REG_FIFO                   0x00
 #define LORA_REG_FIFO_ADDR_PTR          0x0d
-#define LORA_REG_FIFO_RX_BASE_ADDR      0x0e
-#define LORA_REG_FIFO_TX_BASE_ADDR      0x0f
+#define LORA_REG_FIFO_TX_BASE_ADDR      0x0e
+#define LORA_REG_FIFO_RX_BASE_ADDR      0x0f
 #define LORA_REG_FIFO_RX_ADDR           0x25
 #define LORA_REG_FIFO_RX_CURRENT_ADDR   0x10
 

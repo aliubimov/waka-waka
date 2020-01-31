@@ -15,10 +15,16 @@ find_package(SDL2 REQUIRED SDL2)
 include_directories(${SDL2_INCLUDE_DIRS})
 
 add_executable(main main.c ${SOURCES} ${INCLUDES})
+add_executable(spi_main spi_main.cpp ${SOURCES} ${INCLUDES})
 
 target_link_libraries(main PRIVATE SDL2 )
+
 
 add_executable(lora lora.cpp ${LORA_DRV_SRC} ${LORA_DRV_INCL})
 
 target_link_libraries(lora PRIVATE mpsse )
 target_compile_options(lora PRIVATE "-DLIBFTDI1=1")
+
+target_link_libraries(spi_main PRIVATE SDL2 )
+target_link_libraries(spi_main PRIVATE mpsse )
+target_compile_options(spi_main PRIVATE "-DLIBFTDI1=1")

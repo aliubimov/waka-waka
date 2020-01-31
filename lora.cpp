@@ -7,7 +7,7 @@ extern "C" {
 }
 
 
-static  mpsse_context *ctx = MPSSE(SPI0, TEN_MHZ, MSB);
+static mpsse_context *ctx = MPSSE(SPI0, TEN_MHZ, MSB);
 
 void write_16(uint16_t addr, uint8_t data)
 {
@@ -70,15 +70,15 @@ int main()
 
     lora_tx_request_t tx = {
         .data = (uint8_t *)data,
-        .size = 11
+        .size = 12
     };
 
 
 
     
     while (true) {
-//        lora_receive(&dev);
-        lora_send(&dev, &tx);
+        lora_receive(&dev);
+//        lora_send(&dev, &tx);
     }
 
     return 0;

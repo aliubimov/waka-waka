@@ -42,6 +42,14 @@
 #define LORA_REG_IRQ_FLAGS_CAD_DONE     (1 << 2)
 #define LORA_REG_IRQ_FLAGS_CAD_DETECTED 0
 
+
+#define LORA_REG_PA_CONFIG              0x09
+#define LORA_PA_CONFIG_BOOST            (1 << 7)
+
+#define LORA_REG_MODEM_CONFIG_1         0x1d
+#define LORA_REG_MODEM_CONFIG_2         0x1e
+#define LORA_REG_SYMB_TIMEOUT_LSB       0x1f
+
 typedef enum lora_result 
 {
     lrSuccess,
@@ -67,25 +75,53 @@ typedef struct lora_tx_request
 
 
 
+typedef struct lora_modem_config
+{
+    // config 1 part
+    uint8_t bandwidth:4;
+    uint8_t coding_rate:3;
+    uint8_t implicit_header:1;
+
+    uint8_t spreading_factor:4;
+    uint8_t tx_continous_mode:1;
+    uint8_t rx_payload_crc_on:1;
+    uint16_t symb_timeout:10 __attribute__((packed));
+
+    uint8_t mobile_node:1;
+    uint8_t agc_auto_on:1;
+} lora_modem_config_t;
+
+
+
 /*
- * Initialize LoRA device and switch it to STANDBY mode.
+ * \brief Initialize LoRA device and switch it to STANDBY mode.
  */
 lora_result_t lora_init(const lora_dev_t *dev);
 
+/*
+ * \brief Configure LoRA modem with provided settings
+ */
+lora_result_t lora_config(const lora_dev_t *dev, const lora_modem_config_t *config);
+
 
 /*
- * Switch trasmitter to STANDBY mode. Aborts any opration
- * that is in process
+ * \brief Switch trasmiter to STANDBY mode. Aborts any opration that is in process
  */
 lora_result_t lora_enable(const lora_dev_t *dev);
 
 /*
- * Switch transmitter to SLEEP mode
+ * \brief Switch transmiter to SLEEP mode
  */
 lora_result_t lora_disable(const lora_dev_t *dev);
 
 
-lora_result_t lora_send(const lora_dev_t *dev, lora_tx_request_t *req);
+/*
+ * \brief Set power output on RFO or PA_BOOST pin
+ * \param power value in range 0-15, 20 enables PA_BOOST with max power +20 dBm
+ */
+lora_result_t lora_set_power(const lora_dev_t *dev, uint8_t power);
+
+lora_result_t lora_send(const lora_dev_t *dev, const lora_tx_request_t *req);
 
 
 lora_result_t lora_receive(const lora_dev_t *dev);

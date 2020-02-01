@@ -14,11 +14,12 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
 find_package(SDL2 REQUIRED SDL2)
 include_directories(${SDL2_INCLUDE_DIRS})
 
-add_executable(main main.c ${SOURCES} ${INCLUDES})
+add_executable(main main.cpp ${SOURCES} ${INCLUDES})
 add_executable(spi_main spi_main.cpp ${SOURCES} ${INCLUDES})
 
 target_link_libraries(main PRIVATE SDL2 )
-
+target_link_libraries(main PRIVATE mpsse )
+target_compile_options(main PRIVATE "-DLIBFTDI1=1")
 
 add_executable(lora lora.cpp ${LORA_DRV_SRC} ${LORA_DRV_INCL})
 

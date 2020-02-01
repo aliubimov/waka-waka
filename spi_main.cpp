@@ -228,7 +228,7 @@ extern "C" {
 #define RA8875_SCROLL_LAYER2    0x80 ///< See datasheet
 #define RA8875_SCROLL_BUFFER    0xC0 ///< See datasheet
 
-static mpsse_context *ctx = MPSSE(SPI0, ONE_MHZ, MSB);
+static mpsse_context *ctx = MPSSE(SPI0, TEN_MHZ, MSB);
 
 void write_data(uint8_t addr, uint8_t *data, size_t size)
 {
@@ -481,28 +481,28 @@ int main2()
 #define ILI9341_PINK 0xFC18        ///< 255, 130, 198
 
 static const uint8_t initcmd[] = {
-  0xEF, 3, 0x03, 0x80, 0x02,
-  0xCF, 3, 0x00, 0xC1, 0x30,
-  0xED, 4, 0x64, 0x03, 0x12, 0x81,
-  0xE8, 3, 0x85, 0x00, 0x78,
-  0xCB, 5, 0x39, 0x2C, 0x00, 0x34, 0x02,
-  0xF7, 1, 0x20,
-  0xEA, 2, 0x00, 0x00,
-  ILI9341_PWCTR1  , 1, 0x23,             // Power control VRH[5:0]
-  ILI9341_PWCTR2  , 1, 0x10,             // Power control SAP[2:0];BT[3:0]
-  ILI9341_VMCTR1  , 2, 0x3e, 0x28,       // VCM control
-  ILI9341_VMCTR2  , 1, 0x86,             // VCM control2
-  ILI9341_MADCTL  , 1, 0x48,             // Memory Access Control
-  ILI9341_VSCRSADD, 1, 0x00,             // Vertical scroll zero
-  ILI9341_PIXFMT  , 1, 0x55,
-  ILI9341_FRMCTR1 , 2, 0x00, 0x18,
-  ILI9341_DFUNCTR , 3, 0x08, 0x82, 0x27, // Display Function Control
-  0xF2, 1, 0x00,                         // 3Gamma Function Disable
-  ILI9341_GAMMASET , 1, 0x01,             // Gamma curve selected
-  ILI9341_GMCTRP1 , 15, 0x0F, 0x31, 0x2B, 0x0C, 0x0E, 0x08, // Set Gamma
-    0x4E, 0xF1, 0x37, 0x07, 0x10, 0x03, 0x0E, 0x09, 0x00,
-  ILI9341_GMCTRN1 , 15, 0x00, 0x0E, 0x14, 0x03, 0x11, 0x07, // Set Gamma
-    0x31, 0xC1, 0x48, 0x08, 0x0F, 0x0C, 0x31, 0x36, 0x0F,
+//  0xEF, 3, 0x03, 0x80, 0x02,
+//  0xCF, 3, 0x00, 0xC1, 0x30,
+//  0xED, 4, 0x64, 0x03, 0x12, 0x81,
+//  0xE8, 3, 0x85, 0x00, 0x78,
+//  0xCB, 5, 0x39, 0x2C, 0x00, 0x34, 0x02,
+//  0xF7, 1, 0x20,
+//  0xEA, 2, 0x00, 0x00,
+//  ILI9341_PWCTR1  , 1, 0x23,             // Power control VRH[5:0]
+//  ILI9341_PWCTR2  , 1, 0x10,             // Power control SAP[2:0];BT[3:0]
+//  ILI9341_VMCTR1  , 2, 0x3e, 0x28,       // VCM control
+//  ILI9341_VMCTR2  , 1, 0x86,             // VCM control2
+//  ILI9341_MADCTL  , 1, 0x48,             // Memory Access Control
+//  ILI9341_VSCRSADD, 1, 0x00,             // Vertical scroll zero
+//  ILI9341_PIXFMT  , 1, 0x66,
+//  ILI9341_FRMCTR1 , 2, 0x00, 0x18,
+//  ILI9341_DFUNCTR , 3, 0x08, 0x82, 0x27, // Display Function Control
+//  0xF2, 1, 0x00,                         // 3Gamma Function Disable
+//  ILI9341_GAMMASET , 1, 0x01,             // Gamma curve selected
+//  ILI9341_GMCTRP1 , 15, 0x0F, 0x31, 0x2B, 0x0C, 0x0E, 0x08, // Set Gamma
+//    0x4E, 0xF1, 0x37, 0x07, 0x10, 0x03, 0x0E, 0x09, 0x00,
+//  ILI9341_GMCTRN1 , 15, 0x00, 0x0E, 0x14, 0x03, 0x11, 0x07, // Set Gamma
+//    0x31, 0xC1, 0x48, 0x08, 0x0F, 0x0C, 0x31, 0x36, 0x0F,
   ILI9341_SLPOUT  , 0x80,                // Exit Sleep
   ILI9341_DISPON  , 0x80,                // Display on
   0x00                                   // End of list
@@ -510,7 +510,7 @@ static const uint8_t initcmd[] = {
 
 inline void write_reg(uint8_t addr, uint8_t data) 
 {
-    PinHigh(ctx, DCX);
+    PinLow(ctx, DCX);
     PinLow(ctx, CS);
 
     Write(ctx, (char *) &addr, 1);
@@ -608,17 +608,17 @@ int main()
 
         if (n == 0x80) {
             printf("%x\n", cmd);
-            write_cmd(cmd);
+//            write_cmd(cmd);
             usleep(1000);
         } else {
             printf("%x %zu\n", cmd, n);
-            write_cint(cmd, addr, n);
+//            write_cint(cmd, addr, n);
             addr += n;
         }
 
     }
 
-    write_reg(0xbf, 0x03);
+//    write_reg(0xbf, 0x03);
 
     write_reg(0x11, 0x80);
 
@@ -628,10 +628,18 @@ int main()
     usleep(1000);
 
     uint8_t r, g ,b;
-    while (true) 
-    {
-        uint8_t data[] = { r++, g++, b++};
-        write_cint(0x3c, data, 3);
+
+    for (r = 0; r < 0xff; r++) {
+        for (g = 0; g < 0xff; g++) {
+            for (b = 0; b < 0xff; b++) {
+                uint8_t c1 = r;
+                uint8_t c2 = g;
+                uint8_t c3 = b;
+
+                uint8_t data[] = { c1, c2, c3};
+                write_cint(0x3c, data, 3);
+            }
+        }
     }
 
     return 0;

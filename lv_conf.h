@@ -20,8 +20,8 @@
  *====================*/
 
 /* Maximal horizontal and vertical resolution to support by the library.*/
-#define LV_HOR_RES_MAX          (480)
-#define LV_VER_RES_MAX          (272)
+#define LV_HOR_RES_MAX          (240)
+#define LV_VER_RES_MAX          (320)
 
 /* Color depth:
  * - 1:  1 byte per pixel
@@ -29,11 +29,11 @@
  * - 16: RGB565
  * - 32: ARGB8888
  */
-#define LV_COLOR_DEPTH     32
+#define LV_COLOR_DEPTH    16
 
 /* Swap the 2 bytes of RGB565 color.
  * Useful if the display has a 8 bit interface (e.g. SPI)*/
-#define LV_COLOR_16_SWAP   0
+#define LV_COLOR_16_SWAP  1
 
 /* 1: Enable screen transparency.
  * Useful for OSD or other overlapping GUIs.
@@ -56,7 +56,7 @@
 /* Dot Per Inch: used to initialize default sizes.
  * E.g. a button with width = LV_DPI / 2 -> half inch wide
  * (Not so important, you can adjust it to modify default sizes and spaces)*/
-#define LV_DPI              100     /*[px]*/
+#define LV_DPI              97     /*[px]*/
 
 /* Type of coordinates. Should be `int16_t` (or `int32_t` for extreme cases) */
 typedef int16_t lv_coord_t;

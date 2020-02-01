@@ -62,4 +62,5 @@ simulator/Makefile
 # bin
 simulator/main
 simulator/lora
+
 /Debug/

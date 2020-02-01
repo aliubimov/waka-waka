@@ -65,6 +65,7 @@
                   <pin peripheral="LPSPI1" signal="SCK" pin_num="52" pin_signal="GPIO_AD_06"/>
                   <pin peripheral="LPSPI1" signal="SDI" pin_num="57" pin_signal="GPIO_AD_03"/>
                   <pin peripheral="LPSPI1" signal="SDO" pin_num="56" pin_signal="GPIO_AD_04"/>
+                  <pin peripheral="GPIO1" signal="gpiomux_io, 16" pin_num="58" pin_signal="GPIO_AD_02"/>
                </pins>
             </function>
             <function name="BOARD_InitDEBUG_UARTPins">
@@ -367,7 +368,7 @@
             <component name="system" uuid="4a100408-9d44-4f77-a658-646454dbcdb7" type_id="system_54b53072540eeeb8f8e9343e71f28176">
                <config_set_global name="global_system_definitions"/>
             </component>
-            <component name="msg" uuid="cf4873c2-e0f2-4127-931f-5dc275d0c602" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
+            <component name="msg" uuid="86618c17-92be-40a9-97c9-5cd66f554bcd" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
                <config_set_global name="global_messages"/>
             </component>
          </components>

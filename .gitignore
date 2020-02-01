@@ -53,11 +53,12 @@ dkms.conf
 
 
 #CMake stuff
-CMakeFiles
-CMakeCache.txt
-cmake_install.cmake
-Makefile
+simulator/CMakeFiles
+simulator/CMakeCache.txt
+simulator/cmake_install.cmake
+simulator/Makefile
+
 
 # bin
-main
-lora
+simulator/main
+simulator/lora

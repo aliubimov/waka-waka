@@ -4,3 +4,9 @@
 [submodule "lvgl"]
 	path = lvgl
 	url = https://github.com/littlevgl/lvgl.git
+[submodule "middleware/lvgl"]
+	path = middleware/lvgl
+	url = https://github.com/littlevgl/lvgl.git
+[submodule "middleware/lv_drivers"]
+	path = middleware/lv_drivers
+	url = https://github.com/littlevgl/lv_drivers.git

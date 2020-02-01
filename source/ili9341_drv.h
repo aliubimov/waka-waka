@@ -95,9 +95,10 @@
 
 typedef struct ili9341_handle {
 	void (*write_cmd)(uint8_t cmd);
+	void (*write_data)(uint8_t data);
 	void (*write_reg8)(uint8_t cmd, uint8_t data);
 	void (*write_reg16)(uint8_t cmd, uint16_t data);
-	void (*request_dma_transfer)(uint8_t *data, size_t size);
+	void (*write_data_dma)(uint8_t *data, size_t size);
 } ili9341_handle_t;
 
 #if defined(__cplusplus)

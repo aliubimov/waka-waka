@@ -42,6 +42,7 @@
 /* TODO: insert other include files here. */
 
 /* TODO: insert other definitions and declarations here. */
+#include "lcd_app.h"
 
 /*
  * @brief   Application entry point.
@@ -56,6 +57,8 @@ int main(void) {
     BOARD_InitDebugConsole();
 
     PRINTF("Hello World\n");
+
+    init_lcd();
 
     /* Force the counter to be placed into memory. */
     volatile static int i = 0 ;

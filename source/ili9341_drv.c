@@ -37,10 +37,13 @@ static const uint8_t initcmd[] = {
   0x00                                   // End of list
 };
 
-
 void ili9341_init_default(ili9341_handle_t *handle)
 {
-
+	handle->write_cmd = NULL;
+	handle->write_data = NULL;
+	handle->write_data_dma = NULL;
+	handle->write_reg8 = NULL;
+	handle->write_reg16 = NULL;
 }
 
 
@@ -54,4 +57,10 @@ void ili9341_screen_on(ili9341_handle_t *handle)
 {
 	handle->write_reg8(ILI9341_SLPOUT, 0x80);
 	handle->write_reg8(ILI9341_DISPON, 0x80);
+}
+
+void ili9341_write_buffer(ili9341_handle_t *handle, uint8_t buf, size_t buf_size)
+{
+	handle->write_cmd(0x3c);
+	handle->write_data_dma(&buf, buf_size);
 }

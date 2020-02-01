@@ -284,6 +284,16 @@
                   <data type="Version">2.0.3</data>
                </feature>
             </dependency>
+            <dependency resourceType="SWComponent" resourceId="platform.drivers.edma" description="EDMA Driver not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
+               <feature name="enabled" evaluation="equal">
+                  <data type="Boolean">true</data>
+               </feature>
+            </dependency>
+            <dependency resourceType="SWComponent" resourceId="platform.drivers.edma" description="Unsupported version of the EDMA Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. Project might not compile correctly." problem_level="1" source="Peripherals">
+               <feature name="version" evaluation="equivalent">
+                  <data type="Version">2.2.0</data>
+               </feature>
+            </dependency>
          </dependencies>
          <generated_project_files>
             <file path="board/peripherals.c" update_enabled="true"/>
@@ -317,6 +327,16 @@
                         <data type="Frequency" unit="Hz">0</data>
                      </feature>
                   </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.dmamux" description="The fsl_dmamux driver is missing in the project (required for the eDMA). Problem must be resolved in another tool." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="enabled" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.dmamux" description="The compatible version of the fsl_dmamux driver is not available in the project (required for the eDMA). Problem must be resolved in another tool." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="version" evaluation="compatible">
+                        <data type="Version">2.0.2</data>
+                     </feature>
+                  </dependency>
                </dependencies>
                <instances>
                   <instance name="LPSPI1" uuid="90a7d8ef-fab8-4dff-bbfc-9460d33696b1" type="lpspi" type_id="lpspi_6e21a1e0a09f0a012d683c4f91752db8" mode="transfer" peripheral="LPSPI1" enabled="true" comment="" custom_name_enabled="false">
@@ -341,12 +361,12 @@
                            </struct>
                         </struct>
                      </config_set>
-                     <config_set name="main" quick_selection="qs_master">
+                     <config_set name="main">
                         <setting name="mode" value="kLPSPI_Master"/>
                         <setting name="clockSource" value="LpspiClock"/>
                         <setting name="clockSourceFreq" value="BOARD_BootClockRUN"/>
                         <struct name="master">
-                           <setting name="baudRate" value="500000"/>
+                           <setting name="baudRate" value="5000000"/>
                            <setting name="bitsPerFrame" value="8"/>
                            <setting name="cpol" value="kLPSPI_ClockPolarityActiveHigh"/>
                            <setting name="cpha" value="kLPSPI_ClockPhaseFirstEdge"/>
@@ -361,6 +381,145 @@
                         </struct>
                      </config_set>
                   </instance>
+                  <instance name="DMA0" uuid="56b9c9f5-c097-469a-9bb2-4ba3612da88c" type="edma" type_id="edma_1d2abaef2e6117c98d396751e1792fd5" mode="basic" peripheral="DMA0" enabled="true" comment="" custom_name_enabled="false">
+                     <config_set name="fsl_edma">
+                        <struct name="common_settings">
+                           <setting name="enableContinuousLinkMode" value="false"/>
+                           <setting name="enableHaltOnError" value="true"/>
+                           <setting name="enableRoundRobinArbitration" value="false"/>
+                           <setting name="enableDebugMode" value="false"/>
+                        </struct>
+                        <array name="dma_table">
+                           <struct name="0"/>
+                           <struct name="1"/>
+                        </array>
+                        <array name="edma_channels">
+                           <struct name="0">
+                              <setting name="apiMode" value="nontrans"/>
+                              <struct name="edma_channel">
+                                 <setting name="channel_prefix_id" value="CH0"/>
+                                 <setting name="eDMAn" value="0"/>
+                                 <setting name="eDMA_source" value="kDmaRequestMuxLPSPI1Tx"/>
+                                 <setting name="enableTriggerPIT" value="false"/>
+                                 <setting name="init_channel_priority" value="false"/>
+                                 <struct name="edma_channel_Preemption">
+                                    <setting name="enableChannelPreemption" value="false"/>
+                                    <setting name="enablePreemptAbility" value="false"/>
+                                    <setting name="channelPriority" value="0"/>
+                                 </struct>
+                              </struct>
+                              <setting name="resetChannel" value="false"/>
+                              <setting name="enableChannelRequest" value="false"/>
+                              <setting name="enableAsyncRequest" value="false"/>
+                              <setting name="enableAutoStop" value="false"/>
+                              <setting name="enableMinorLoop" value="false"/>
+                              <struct name="minorLoopConfig">
+                                 <setting name="offsetType" value="disabled"/>
+                                 <setting name="mloff" value="0"/>
+                              </struct>
+                              <setting name="init_channel_link" value="false"/>
+                              <setting name="channel_link" value="kEDMA_LinkNone"/>
+                              <setting name="linkedChannel" value=""/>
+                              <setting name="init_bandwidth" value="false"/>
+                              <setting name="bandwidth" value="kEDMA_BandwidthStallNone"/>
+                              <setting name="init_modulo" value="false"/>
+                              <setting name="s_mod" value="kEDMA_ModuloDisable"/>
+                              <setting name="d_mod" value="kEDMA_ModuloDisable"/>
+                              <setting name="nontransEnable" value="false"/>
+                              <struct name="nontrans_config">
+                                 <setting name="tcdID" value="CH0_transfer"/>
+                                 <setting name="saddr_expr" value=""/>
+                                 <setting name="saddr_def" value=""/>
+                                 <setting name="soff" value="0U"/>
+                                 <setting name="soff_def" value=""/>
+                                 <setting name="ssize" value="kEDMA_TransferSize1Bytes"/>
+                                 <setting name="daddr_expr" value=""/>
+                                 <setting name="daddr_def" value=""/>
+                                 <setting name="doff" value="0U"/>
+                                 <setting name="doff_def" value=""/>
+                                 <setting name="dsize" value="kEDMA_TransferSize1Bytes"/>
+                                 <setting name="nbytes" value="1"/>
+                              </struct>
+                              <set name="channel_enabled_interrupts">
+                                 <selected/>
+                              </set>
+                              <setting name="init_interrupts" value="false"/>
+                              <struct name="interrupt_channel">
+                                 <setting name="IRQn" value="DMA0_IRQn"/>
+                                 <setting name="enable_priority" value="false"/>
+                                 <setting name="priority" value="0"/>
+                                 <setting name="enable_custom_name" value="false"/>
+                              </struct>
+                           </struct>
+                           <struct name="1">
+                              <setting name="apiMode" value="nontrans"/>
+                              <struct name="edma_channel">
+                                 <setting name="channel_prefix_id" value="CH1"/>
+                                 <setting name="eDMAn" value="1"/>
+                                 <setting name="eDMA_source" value="kDmaRequestMuxLPSPI1Rx"/>
+                                 <setting name="enableTriggerPIT" value="false"/>
+                                 <setting name="init_channel_priority" value="false"/>
+                                 <struct name="edma_channel_Preemption">
+                                    <setting name="enableChannelPreemption" value="false"/>
+                                    <setting name="enablePreemptAbility" value="false"/>
+                                    <setting name="channelPriority" value="0"/>
+                                 </struct>
+                              </struct>
+                              <setting name="resetChannel" value="false"/>
+                              <setting name="enableChannelRequest" value="false"/>
+                              <setting name="enableAsyncRequest" value="false"/>
+                              <setting name="enableAutoStop" value="false"/>
+                              <setting name="enableMinorLoop" value="false"/>
+                              <struct name="minorLoopConfig">
+                                 <setting name="offsetType" value="disabled"/>
+                                 <setting name="mloff" value="0"/>
+                              </struct>
+                              <setting name="init_channel_link" value="false"/>
+                              <setting name="channel_link" value="kEDMA_LinkNone"/>
+                              <setting name="linkedChannel" value="0"/>
+                              <setting name="init_bandwidth" value="false"/>
+                              <setting name="bandwidth" value="kEDMA_BandwidthStallNone"/>
+                              <setting name="init_modulo" value="false"/>
+                              <setting name="s_mod" value="kEDMA_ModuloDisable"/>
+                              <setting name="d_mod" value="kEDMA_ModuloDisable"/>
+                              <setting name="nontransEnable" value="false"/>
+                              <struct name="nontrans_config">
+                                 <setting name="tcdID" value="CH1_transfer"/>
+                                 <setting name="saddr_expr" value=""/>
+                                 <setting name="saddr_def" value=""/>
+                                 <setting name="soff" value="0U"/>
+                                 <setting name="soff_def" value=""/>
+                                 <setting name="ssize" value="kEDMA_TransferSize1Bytes"/>
+                                 <setting name="daddr_expr" value=""/>
+                                 <setting name="daddr_def" value=""/>
+                                 <setting name="doff" value="0U"/>
+                                 <setting name="doff_def" value=""/>
+                                 <setting name="dsize" value="kEDMA_TransferSize1Bytes"/>
+                                 <setting name="nbytes" value="1"/>
+                              </struct>
+                              <set name="channel_enabled_interrupts">
+                                 <selected/>
+                              </set>
+                              <setting name="init_interrupts" value="false"/>
+                              <struct name="interrupt_channel">
+                                 <setting name="IRQn" value="DMA1_IRQn"/>
+                                 <setting name="enable_priority" value="false"/>
+                                 <setting name="priority" value="0"/>
+                                 <setting name="enable_custom_name" value="false"/>
+                              </struct>
+                           </struct>
+                        </array>
+                        <struct name="errInterruptConfig">
+                           <setting name="enableErrInterrupt" value="false"/>
+                           <struct name="errorInterrupt">
+                              <setting name="IRQn" value="DMA_ERROR_IRQn"/>
+                              <setting name="enable_priority" value="false"/>
+                              <setting name="priority" value="0"/>
+                              <setting name="enable_custom_name" value="false"/>
+                           </struct>
+                        </struct>
+                     </config_set>
+                  </instance>
                </instances>
             </functional_group>
          </functional_groups>
@@ -368,7 +527,7 @@
             <component name="system" uuid="4a100408-9d44-4f77-a658-646454dbcdb7" type_id="system_54b53072540eeeb8f8e9343e71f28176">
                <config_set_global name="global_system_definitions"/>
             </component>
-            <component name="msg" uuid="86618c17-92be-40a9-97c9-5cd66f554bcd" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
+            <component name="msg" uuid="6dd74846-39d2-4be3-90a5-23002f24bbd9" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
                <config_set_global name="global_messages"/>
             </component>
          </components>

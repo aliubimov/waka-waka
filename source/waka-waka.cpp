@@ -50,7 +50,7 @@
  * @brief   Application entry point.
  */
 
-void write_lora_spi(uint8_t reg, uint8_t data) {
+void __attribute__((section (".ramfunc"))) write_lora_spi(uint8_t reg, uint8_t data) {
     LPSPI1_txBuffer[0] = reg | 0x80;
     LPSPI1_txBuffer[1] = data;
     while (LPSPI_GetStatusFlags(LPSPI1) & kLPSPI_ModuleBusyFlag) {};
@@ -58,7 +58,7 @@ void write_lora_spi(uint8_t reg, uint8_t data) {
 
 }
 
-uint8_t read_lora_spi(uint8_t reg) {
+uint8_t __attribute__((section (".ramfunc"))) read_lora_spi(uint8_t reg) {
     LPSPI1_txBuffer[0] = reg;
     LPSPI1_txBuffer[1] = 0xa;
     while (LPSPI_GetStatusFlags(LPSPI1) & kLPSPI_ModuleBusyFlag) {};

@@ -1,20 +1,38 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-# Checkout
 
-Don't forget to add `--recurse-submodules` when checking out Git repository.
+For now only LoRA or LCD could be used. 
 
-# Build
+RFM95 Pin setup
+---
 
-Run cmake
+NSS -> J57[6]
 
-`cmake -G "Unix Makefiles"`
+SCK -> J57[12]
 
-Than build
+MOSI -> J57[8]
 
-`make`
+MISO -> J57[10]
 
-To run demo
+3.3V -> J60[8]
 
-`./main`
+GRND -> J60[14]
 
+
+
+LCD Pin Setup
+---
+
+CS -> J57[6]
+
+SCK -> J57[12]
+
+SDI(MOSI) -> J57[8]
+
+SDO(MISO) -> J57[10]
+
+VCC(5V) -> J60[10]
+
+REST + LED -> J60[8]
+
+GRND -> J60[14]

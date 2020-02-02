@@ -120,6 +120,26 @@ void init_dcx() {
 	};
 
 	GPIO_PinInit(GPIO1, 16, &dcx_config);
+	GPIO_PinInit(GPIO1, 15, &dcx_config);
+
+
+	GPIO_PinWrite(GPIO1, 15, 1);
+
+	for (uint16_t i = 0; i < 50000; ++i) {
+		__NOP();
+	}
+
+	GPIO_PinWrite(GPIO1, 15, 0);
+
+	for (uint16_t i = 0; i < 50000; ++i) {
+		__NOP();
+	}
+
+	GPIO_PinWrite(GPIO1, 15, 1);
+
+	for (uint16_t i = 0; i < 50000; ++i) {
+		__NOP();
+	}
 }
 
 void lcd_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t *color_p)
@@ -201,6 +221,7 @@ void PIT_IRQHANDLER(void) {
 
 
 void app_run() {
+
 	lv_init();
 
 	lv_log_register_print_cb(log_to_uart);

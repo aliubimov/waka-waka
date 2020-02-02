@@ -49,6 +49,7 @@ BOARD_InitPins:
   - {pin_num: '57', peripheral: LPSPI1, signal: SDI, pin_signal: GPIO_AD_03}
   - {pin_num: '56', peripheral: LPSPI1, signal: SDO, pin_signal: GPIO_AD_04}
   - {pin_num: '58', peripheral: GPIO1, signal: 'gpiomux_io, 16', pin_signal: GPIO_AD_02}
+  - {pin_num: '59', peripheral: GPIO1, signal: 'gpiomux_io, 15', pin_signal: GPIO_AD_01}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 
@@ -61,6 +62,9 @@ BOARD_InitPins:
 void BOARD_InitPins(void) {
   CLOCK_EnableClock(kCLOCK_Iomuxc);           /* iomuxc clock (iomuxc_clk_enable): 0x03U */
 
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_AD_01_GPIOMUX_IO15,         /* GPIO_AD_01 is configured as GPIOMUX_IO15 */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_02_GPIOMUX_IO16,         /* GPIO_AD_02 is configured as GPIOMUX_IO16 */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */

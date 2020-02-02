@@ -58,6 +58,11 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_ADC12_2_SIGNAL                                 gpiomux_io   /*!< GPIO1 signal: gpiomux_io */
 #define BOARD_INITPINS_ADC12_2_CHANNEL                                       16U   /*!< GPIO1 gpiomux_io channel: 16 */
 
+/* GPIO_AD_01 (number 59), ADC12_1/J26[10]/J56[14] */
+#define BOARD_INITPINS_ADC12_1_PERIPHERAL                                  GPIO1   /*!< Device name: GPIO1 */
+#define BOARD_INITPINS_ADC12_1_SIGNAL                                 gpiomux_io   /*!< GPIO1 signal: gpiomux_io */
+#define BOARD_INITPINS_ADC12_1_CHANNEL                                       15U   /*!< GPIO1 gpiomux_io channel: 15 */
+
 
 /*!
  * @brief Configures pin routing and optionally pin electrical features.

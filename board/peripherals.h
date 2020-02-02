@@ -55,7 +55,7 @@ extern "C" {
 /* Definition of ticks count for channel 0 - deprecated. */
 #define PIT_0_TICKS 312499U
 /* PIT interrupt vector ID (number) - deprecated. */
-#define PIT_0_IRQN PIT0_IRQn
+#define PIT_0_IRQN PIT_IRQn
 /* PIT interrupt handler identifier - deprecated. */
 #define PIT_0_IRQHANDLER PIT0_IRQHandler
 /* Definition of channel number for channel 0. */

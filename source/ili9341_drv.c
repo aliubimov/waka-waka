@@ -46,6 +46,10 @@ void ili9341_init_default(ili9341_handle_t *handle)
 	handle->write_reg16 = NULL;
 }
 
+void ili3941_soft_reset(ili9341_handle_t *handle) {
+	handle->write_cmd(ILI9341_SWRESET);
+}
+
 
 void ili9341_init_controller(ili9341_handle_t *handle)
 {

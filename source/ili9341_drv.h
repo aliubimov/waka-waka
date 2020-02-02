@@ -117,6 +117,11 @@ void ili9341_init_default(ili9341_handle_t *handle);
 void ili9341_init_controller(ili9341_handle_t *handle);
 
 /*
+ * @brief Resets controller via soft-reset
+ */
+void ili3941_soft_reset(ili9341_handle_t *handle);
+
+/*
  * @brief Enable screen
  */
 void ili9341_screen_on(ili9341_handle_t *handle);

@@ -26,17 +26,16 @@ volatile static bool in_progress = false;
 
 void LPSPI_MasterUserCallback(LPSPI_Type *base, lpspi_master_edma_handle_t *handle, status_t status, void *userData)
 {
-    if (status == kStatus_Success)
-    {
-        PRINTF("This is LPSPI master edma transfer completed callback. \r\n\r\n");
-    }
-
     in_progress = false;
 }
 
 
 void write_cmd(uint8_t cmd)
 {
+	while (in_progress) {
+		__NOP();
+	}
+
 	GPIO_PinWrite(GPIO1, 16, 0);
 
 	LPSPI1_txBuffer[0] = cmd;
@@ -49,6 +48,10 @@ void write_cmd(uint8_t cmd)
 
 void write_data(uint8_t data)
 {
+	while (in_progress) {
+		__NOP();
+	}
+
 	GPIO_PinWrite(GPIO1, 16, 1);
 
 	LPSPI1_txBuffer[0] = data;
@@ -70,12 +73,17 @@ void write_data_dma(uint8_t *data, size_t size)
 		__NOP();
 	}
 
+	in_progress = true;
+
 	GPIO_PinWrite(GPIO1, 16, 1);
 	LPSPI_MasterTransferEDMA(LPSPI1, &g_m_edma_handle, &transfer);
 }
 
 void write_reg8(uint8_t cmd, uint8_t data)
 {
+	while (in_progress) {
+		__NOP();
+	}
 
 	GPIO_PinWrite(GPIO1, 16, 0);
 
@@ -102,7 +110,7 @@ void init_dma() {
 	EDMA_CreateHandle(&lpspiEdmaMasterRxRegToRxDataHandle, DMA0, DMA0_CH1_DMA_CHANNEL);
 
 	LPSPI_MasterTransferCreateHandleEDMA(LPSPI1, &g_m_edma_handle, LPSPI_MasterUserCallback, NULL, &lpspiEdmaMasterRxRegToRxDataHandle, &lpspiEdmaMasterTxDataToTxRegHandle);
-
+	in_progress = false;
 }
 
 
@@ -114,7 +122,7 @@ void init_dcx() {
 	GPIO_PinInit(GPIO1, 16, &dcx_config);
 }
 
-void lcd_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p)
+void lcd_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t *color_p)
 {
     /*Return if the area is out the screen*/
     if(area->x2 < 0) return;
@@ -128,26 +136,22 @@ void lcd_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * co
     int32_t act_x2 = area->x2 > LV_HOR_RES - 1 ? LV_HOR_RES - 1 : area->x2;
     int32_t act_y2 = area->y2 > LV_VER_RES - 1 ? LV_VER_RES - 1 : area->y2;
 
-    uint16_t full_w = area->x2 - area->x1 + 1;
-
     uint16_t act_w = act_x2 - act_x1 + 1;
+    uint16_t act_h = act_y2 - act_y1 + 1;
 
     uint8_t p[] = { (uint8_t)(act_y1 >> 8), (uint8_t) (act_y1 & 0x00ff), (uint8_t)(act_y2 >> 8), (uint8_t) (act_y2 & 0x00ff)};
     uint8_t c[] = { (uint8_t)(act_x1 >> 8), (uint8_t) (act_x1 & 0x00ff), (uint8_t)(act_x2 >> 8), (uint8_t) (act_x2 & 0x00ff)};
 
     handle.write_cmd(0x2a);
-    handle.write_data_dma((uint8_t*) c, 4);
+    handle.write_data_dma(c, 4);
 
     handle.write_cmd(0x2b);
-    handle.write_data_dma((uint8_t*) p, 4);
+    handle.write_data_dma(p, 4);
 
-    write_cmd(0x2c);;
+    write_cmd(0x2c);
 
-    for(uint16_t i = act_y1; i <= act_y2; i++) {
-    	handle.write_cmd(0x3c);
-    	handle.write_data_dma((uint8_t*) color_p, act_w * 2);
-        color_p += full_w;
-    }
+	handle.write_cmd(0x3c);
+	handle.write_data_dma((uint8_t*) color_p, act_w * act_h * 2);
 
     lv_disp_flush_ready(disp_drv);
 }
@@ -165,21 +169,54 @@ void init_lcd()
 	handle.write_reg8 = write_reg8;
 	handle.write_data_dma = write_data_dma;
 
+	ili3941_soft_reset(&handle);
 	ili9341_init_controller(&handle);
-	ili9341_screen_on(&handle);
 
-	lv_init();
+	ili9341_screen_on(&handle);
 
 }
 
-static lv_disp_buf_t disp_buf1;
-static lv_color_t buf1_1[480*10];
+static lv_disp_buf_t disp_buf;
+static lv_color_t buf_1[320*5];
+static lv_color_t buf_2[320*5];
 static lv_indev_drv_t indev_drv;
 
 static lv_style_t page_style;
 
+static bool initialized = false;
+
+void log_to_uart(lv_log_level_t level, const char *file, uint32_t line, const char *msg)
+{
+	PRINTF("%s %s", level, msg);
+}
+
+/* PIT_IRQn interrupt handler */
+void PIT_IRQHANDLER(void) {
+	if (initialized) {
+		lv_tick_inc(5);
+	}
+
+	PIT_ClearStatusFlags(PIT, PIT_CHANNEL_0, kPIT_TimerFlag);
+}
+
 
 void app_run() {
+	lv_init();
+
+	lv_log_register_print_cb(log_to_uart);
+
+	lv_disp_buf_init(&disp_buf, &buf_1, &buf_2, 320*5);
+
+    lv_disp_drv_t disp_drv;
+    lv_disp_drv_init(&disp_drv);
+
+
+    disp_drv.rotated = 1;
+    disp_drv.buffer = &disp_buf;
+    disp_drv.flush_cb = lcd_flush;
+
+    lv_disp_drv_register(&disp_drv);
+
     lv_theme_t *th = lv_theme_material_init(0, NULL);
     lv_theme_set_current(th);
 
@@ -212,7 +249,7 @@ void app_run() {
 
 
 
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 6; i++)
     {
         char str[3];
         sprintf(str, "recevied msg %d",i);
@@ -224,13 +261,11 @@ void app_run() {
         lv_page_focus(page, lbl, LV_ANIM_OFF);
     };
 
+    initialized = true;
 
-    while(1) {
-        lv_task_handler();
-        usleep(5 * 1000);
-
-        lv_tick_inc(5);
+    while (1)
+    {
+		lv_task_handler();
     }
-
 }
 

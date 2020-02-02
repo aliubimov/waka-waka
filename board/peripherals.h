@@ -14,6 +14,7 @@
 #include "fsl_common.h"
 #include "fsl_clock.h"
 #include "fsl_lpspi.h"
+#include "fsl_pit.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -46,6 +47,25 @@ extern "C" {
 #define LPSPI1_CLOCK_FREQ 105600000UL
 /* Transfer buffer size */
 #define LPSPI1_BUFFER_SIZE 2
+/* BOARD_InitPeripherals defines for PIT */
+/* Definition of peripheral ID. */
+#define PIT_PERIPHERAL PIT
+/* Definition of clock source frequency. */
+#define PIT_CLK_FREQ 62500000UL
+/* Definition of ticks count for channel 0 - deprecated. */
+#define PIT_0_TICKS 312499U
+/* PIT interrupt vector ID (number) - deprecated. */
+#define PIT_0_IRQN PIT0_IRQn
+/* PIT interrupt handler identifier - deprecated. */
+#define PIT_0_IRQHANDLER PIT0_IRQHandler
+/* Definition of channel number for channel 0. */
+#define PIT_CHANNEL_0 kPIT_Chnl_0
+/* Definition of ticks count for channel 0. */
+#define PIT_CHANNEL_0_TICKS 312499U
+/* PIT interrupt vector ID (number). */
+#define PIT_IRQN PIT_IRQn
+/* PIT interrupt handler identifier. */
+#define PIT_IRQHANDLER PIT_IRQHandler
 
 /***********************************************************************************************************************
  * Global variables
@@ -56,6 +76,7 @@ extern lpspi_transfer_t LPSPI1_transfer;
 extern lpspi_master_handle_t LPSPI1_handle;
 extern uint8_t LPSPI1_txBuffer[LPSPI1_BUFFER_SIZE];
 extern uint8_t LPSPI1_rxBuffer[LPSPI1_BUFFER_SIZE];
+extern const pit_config_t PIT_config;
 
 /***********************************************************************************************************************
  * Initialization functions

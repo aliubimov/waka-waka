@@ -13,4 +13,4 @@ project(lvgl)
 file(GLOB_RECURSE INCLUDES "../lvgl/*.h")
 file(GLOB_RECURSE SOURCES  "../lvgl/*.c")
 
-add_library(lvgl STATIC ${SOURCES})
+add_library(lvgl STATIC ${SOURCES} "terminus.c")

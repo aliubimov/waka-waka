@@ -54,14 +54,18 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_LPSPI1_SDO_SIGNAL                                     SDO   /*!< LPSPI1 signal: SDO */
 
 /* GPIO_AD_02 (number 58), ADC12_2/J26[12]/J56[16] */
-#define BOARD_INITPINS_ADC12_2_PERIPHERAL                                  GPIO1   /*!< Device name: GPIO1 */
-#define BOARD_INITPINS_ADC12_2_SIGNAL                                 gpiomux_io   /*!< GPIO1 signal: gpiomux_io */
-#define BOARD_INITPINS_ADC12_2_CHANNEL                                       16U   /*!< GPIO1 gpiomux_io channel: 16 */
+#define BOARD_INITPINS_ADC12_2_PERIPHERAL                                 LPSPI1   /*!< Device name: LPSPI1 */
+#define BOARD_INITPINS_ADC12_2_SIGNAL                                       PCS1   /*!< LPSPI1 signal: PCS1 */
 
-/* GPIO_AD_01 (number 59), ADC12_1/J26[10]/J56[14] */
-#define BOARD_INITPINS_ADC12_1_PERIPHERAL                                  GPIO1   /*!< Device name: GPIO1 */
-#define BOARD_INITPINS_ADC12_1_SIGNAL                                 gpiomux_io   /*!< GPIO1 signal: gpiomux_io */
-#define BOARD_INITPINS_ADC12_1_CHANNEL                                       15U   /*!< GPIO1 gpiomux_io channel: 15 */
+/* GPIO_01 (number 12), I2C1_SDA/U10[18]/J57[18]/U26[6] */
+#define BOARD_INITPINS_I2C1_SDA_PERIPHERAL                                 GPIO1   /*!< Device name: GPIO1 */
+#define BOARD_INITPINS_I2C1_SDA_SIGNAL                                gpiomux_io   /*!< GPIO1 signal: gpiomux_io */
+#define BOARD_INITPINS_I2C1_SDA_CHANNEL                                       1U   /*!< GPIO1 gpiomux_io channel: 01 */
+
+/* GPIO_02 (number 11), I2C1_SCL/U10[17]/J57[20]/U26[4] */
+#define BOARD_INITPINS_I2C1_SCL_PERIPHERAL                                 GPIO1   /*!< Device name: GPIO1 */
+#define BOARD_INITPINS_I2C1_SCL_SIGNAL                                gpiomux_io   /*!< GPIO1 signal: gpiomux_io */
+#define BOARD_INITPINS_I2C1_SCL_CHANNEL                                       2U   /*!< GPIO1 gpiomux_io channel: 02 */
 
 
 /*!

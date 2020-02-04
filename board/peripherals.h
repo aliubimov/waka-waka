@@ -46,7 +46,7 @@ extern "C" {
 /* Definition of clock source */
 #define LPSPI1_CLOCK_FREQ 105600000UL
 /* Transfer buffer size */
-#define LPSPI1_BUFFER_SIZE 2
+#define LPSPI1_BUFFER_SIZE 10
 /* BOARD_InitPeripherals defines for PIT */
 /* Definition of peripheral ID. */
 #define PIT_PERIPHERAL PIT

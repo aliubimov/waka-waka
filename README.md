@@ -33,8 +33,22 @@ SDO(MISO) -> J57[10]
 
 VCC(5V) -> J60[10]
 
-REST + LED -> J60[8]
+LED -> J60[8]
 
-DCX -> J26[12]
+DCX -> ~J26[12]~ J57[20]
+
+REST -> ~J26[10]~ J57[18]
 
 GRND -> J60[14]
+
+
+Touch Pin Setup
+--- 
+
+CS -> J26[10]
+
+SCK -> J57[12]
+
+SDI(MOSI) -> J57[8]
+
+SDO(MISO) -> J57[10]

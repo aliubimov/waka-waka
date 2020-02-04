@@ -18,6 +18,10 @@
 
 #include "fsl_debug_console.h"
 
+
+#define GPIO_PIN_RESET	1
+#define GPIO_PIN_CDX	2
+
 AT_NONCACHEABLE_SECTION_INIT(lpspi_master_edma_handle_t g_m_edma_handle) = {0};
 edma_handle_t lpspiEdmaMasterRxRegToRxDataHandle;
 edma_handle_t lpspiEdmaMasterTxDataToTxRegHandle;
@@ -36,14 +40,15 @@ void write_cmd(uint8_t cmd)
 		__NOP();
 	}
 
-	GPIO_PinWrite(GPIO1, 16, 0);
+	GPIO_PinWrite(GPIO1, GPIO_PIN_CDX, 0);
 
 	LPSPI1_txBuffer[0] = cmd;
     LPSPI1_transfer.dataSize = 1;
+    LPSPI1_transfer.configFlags = kLPSPI_MasterPcs0;
     while (LPSPI_GetStatusFlags(LPSPI1) & kLPSPI_ModuleBusyFlag) {};
     assert (LPSPI_MasterTransferBlocking(LPSPI1, &LPSPI1_transfer) == kStatus_Success);
 
-    GPIO_PinWrite(GPIO1, 16, 1);
+    GPIO_PinWrite(GPIO1, GPIO_PIN_CDX, 1);
 }
 
 void write_data(uint8_t data)
@@ -52,10 +57,11 @@ void write_data(uint8_t data)
 		__NOP();
 	}
 
-	GPIO_PinWrite(GPIO1, 16, 1);
+	GPIO_PinWrite(GPIO1, GPIO_PIN_CDX, 1);
 
 	LPSPI1_txBuffer[0] = data;
     LPSPI1_transfer.dataSize = 1;
+    LPSPI1_transfer.configFlags = kLPSPI_MasterPcs0;
     while (LPSPI_GetStatusFlags(LPSPI1) & kLPSPI_ModuleBusyFlag) {};
     assert (LPSPI_MasterTransferBlocking(LPSPI1, &LPSPI1_transfer) == kStatus_Success);
 }
@@ -75,7 +81,7 @@ void write_data_dma(uint8_t *data, size_t size)
 
 	in_progress = true;
 
-	GPIO_PinWrite(GPIO1, 16, 1);
+	GPIO_PinWrite(GPIO1, GPIO_PIN_CDX, 1);
 	LPSPI_MasterTransferEDMA(LPSPI1, &g_m_edma_handle, &transfer);
 }
 
@@ -85,17 +91,19 @@ void write_reg8(uint8_t cmd, uint8_t data)
 		__NOP();
 	}
 
-	GPIO_PinWrite(GPIO1, 16, 0);
+	GPIO_PinWrite(GPIO1, GPIO_PIN_CDX, 0);
 
 	LPSPI1_txBuffer[0] = cmd;
     LPSPI1_transfer.dataSize = 1;
+    LPSPI1_transfer.configFlags = kLPSPI_MasterPcs0;
     while (LPSPI_GetStatusFlags(LPSPI1) & kLPSPI_ModuleBusyFlag) {};
     assert (LPSPI_MasterTransferBlocking(LPSPI1, &LPSPI1_transfer) == kStatus_Success);
 
-	GPIO_PinWrite(GPIO1, 16, 1);
+	GPIO_PinWrite(GPIO1, GPIO_PIN_CDX, 1);
 
 	LPSPI1_txBuffer[0] = data;
     LPSPI1_transfer.dataSize = 1;
+    LPSPI1_transfer.configFlags = kLPSPI_MasterPcs0;
     while (LPSPI_GetStatusFlags(LPSPI1) & kLPSPI_ModuleBusyFlag) {};
     assert (LPSPI_MasterTransferBlocking(LPSPI1, &LPSPI1_transfer) == kStatus_Success);
 }
@@ -119,25 +127,25 @@ void init_dcx() {
 			.direction = kGPIO_DigitalOutput
 	};
 
-	GPIO_PinInit(GPIO1, 16, &dcx_config);
-	GPIO_PinInit(GPIO1, 15, &dcx_config);
+	GPIO_PinInit(GPIO1, GPIO_PIN_CDX, &dcx_config);
+	GPIO_PinInit(GPIO1, GPIO_PIN_RESET, &dcx_config);
 
 
-	GPIO_PinWrite(GPIO1, 15, 1);
+	GPIO_PinWrite(GPIO1, GPIO_PIN_RESET, 1);
 
-	for (uint16_t i = 0; i < 50000; ++i) {
+	for (uint32_t i = 0; i < 500000; ++i) {
 		__NOP();
 	}
 
-	GPIO_PinWrite(GPIO1, 15, 0);
+	GPIO_PinWrite(GPIO1, GPIO_PIN_RESET, 0);
 
-	for (uint16_t i = 0; i < 50000; ++i) {
+	for (uint32_t i = 0; i < 500000; ++i) {
 		__NOP();
 	}
 
-	GPIO_PinWrite(GPIO1, 15, 1);
+	GPIO_PinWrite(GPIO1, GPIO_PIN_RESET, 1);
 
-	for (uint16_t i = 0; i < 50000; ++i) {
+	for (uint32_t i = 0; i < 500000; ++i) {
 		__NOP();
 	}
 }
@@ -238,7 +246,7 @@ void app_run() {
 
     lv_disp_drv_register(&disp_drv);
 
-    lv_theme_t *th = lv_theme_material_init(0, NULL);
+    lv_theme_t *th = lv_theme_alien_init(0, NULL);
     lv_theme_set_current(th);
 
     lv_style_copy(&page_style, th->style.bg);
@@ -269,6 +277,7 @@ void app_run() {
     lv_obj_align(input, scr, LV_ALIGN_IN_BOTTOM_MID, 0, -2);
 
 
+    /*
 
     for (int i = 0; i < 6; i++)
     {
@@ -281,12 +290,35 @@ void app_run() {
         lv_label_set_text(lbl, str);
         lv_page_focus(page, lbl, LV_ANIM_OFF);
     };
+    */
+
+    lv_obj_t *lbl_x = lv_label_create(page, NULL);
+    lv_obj_t *lbl_y = lv_label_create(page, NULL);
+
 
     initialized = true;
 
     while (1)
     {
 		lv_task_handler();
+
+		LPSPI1_txBuffer[0] = 0b10010000;
+		LPSPI1_txBuffer[1] = 0x00;
+		LPSPI1_txBuffer[2] = 0b11010000;
+		LPSPI1_txBuffer[3] = 0x00;
+
+		while (in_progress) {};
+
+	    LPSPI1_transfer.dataSize = 5;
+	    LPSPI1_transfer.configFlags = kLPSPI_MasterPcs1;
+	    while (LPSPI_GetStatusFlags(LPSPI1) & kLPSPI_ModuleBusyFlag) {};
+	    assert (LPSPI_MasterTransferBlocking(LPSPI1, &LPSPI1_transfer) == kStatus_Success);
+
+	    uint16_t x = (LPSPI1_rxBuffer[1] << 8) | LPSPI1_rxBuffer[2];
+	    uint16_t y = (LPSPI1_rxBuffer[3] << 8) | LPSPI1_rxBuffer[4];
+
+	    lv_label_set_text_fmt(lbl_x, "%x", x);
+	    lv_label_set_text_fmt(lbl_y, "%x", y);
     }
 }
 

@@ -65,8 +65,9 @@
                   <pin peripheral="LPSPI1" signal="SCK" pin_num="52" pin_signal="GPIO_AD_06"/>
                   <pin peripheral="LPSPI1" signal="SDI" pin_num="57" pin_signal="GPIO_AD_03"/>
                   <pin peripheral="LPSPI1" signal="SDO" pin_num="56" pin_signal="GPIO_AD_04"/>
-                  <pin peripheral="GPIO1" signal="gpiomux_io, 16" pin_num="58" pin_signal="GPIO_AD_02"/>
-                  <pin peripheral="GPIO1" signal="gpiomux_io, 15" pin_num="59" pin_signal="GPIO_AD_01"/>
+                  <pin peripheral="LPSPI1" signal="PCS1" pin_num="58" pin_signal="GPIO_AD_02"/>
+                  <pin peripheral="GPIO1" signal="gpiomux_io, 01" pin_num="12" pin_signal="GPIO_01"/>
+                  <pin peripheral="GPIO1" signal="gpiomux_io, 02" pin_num="11" pin_signal="GPIO_02"/>
                </pins>
             </function>
             <function name="BOARD_InitDEBUG_UARTPins">
@@ -503,7 +504,7 @@
                            <struct name="receiveBuffer">
                               <setting name="init" value="true"/>
                            </struct>
-                           <setting name="dataSize" value="2"/>
+                           <setting name="dataSize" value="10"/>
                            <set name="flags">
                               <selected>
                                  <id>kLPSPI_MasterPcs0</id>
@@ -569,7 +570,7 @@
             <component name="system" uuid="4a100408-9d44-4f77-a658-646454dbcdb7" type_id="system_54b53072540eeeb8f8e9343e71f28176">
                <config_set_global name="global_system_definitions"/>
             </component>
-            <component name="msg" uuid="e273d060-f7b1-48aa-a18b-671a5ac99a9b" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
+            <component name="msg" uuid="9819eb22-7955-4b8e-ba3c-531da6262ddb" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
                <config_set_global name="global_messages"/>
             </component>
          </components>

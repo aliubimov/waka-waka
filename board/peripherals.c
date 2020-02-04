@@ -215,7 +215,7 @@ instance:
         - init: 'true'
       - receiveBuffer:
         - init: 'true'
-      - dataSize: '2'
+      - dataSize: '10'
       - flags: 'kLPSPI_MasterPcs0 kLPSPI_MasterPcsContinuous'
       - callback:
         - name: ''
@@ -256,7 +256,7 @@ const lpspi_master_config_t LPSPI1_config = {
 lpspi_transfer_t LPSPI1_transfer = {
   .txData = LPSPI1_txBuffer,
   .rxData = LPSPI1_rxBuffer,
-  .dataSize = 2,
+  .dataSize = 10,
   .configFlags = kLPSPI_MasterPcs0 | kLPSPI_MasterPcsContinuous
 };
 lpspi_master_handle_t LPSPI1_handle;

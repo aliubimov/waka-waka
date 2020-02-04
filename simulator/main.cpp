@@ -10,6 +10,8 @@
 #include "lv_drivers/display/monitor.h"
 #include "lv_drivers/indev/mouse.h"
 
+#include "../source/app/user_interface.h"
+
 static lv_disp_buf_t disp_buf1;
 static lv_color_t buf1_1[320*10];
 static lv_indev_drv_t indev_drv;
@@ -43,6 +45,35 @@ void init_mouse() {
     lv_indev_drv_register(&indev_drv);
 };
 
+static void memory_monitor(lv_task_t * param)
+{
+    (void) param; /*Unused*/
+
+    lv_mem_monitor_t mon;
+    lv_mem_monitor(&mon);
+    printf("used: %6d (%3d %%), frag: %3d %%, biggest free: %6d\n", (int)mon.total_size - mon.free_size,
+            mon.used_pct,
+            mon.frag_pct,
+            (int)mon.free_biggest_size);
+
+}
+
+input_message_screen_t model;
+
+
+static void on_keyboard_ok(lv_obj_t *kb, lv_event_t event)
+{
+    lv_kb_def_event_cb(kb, event);
+
+    if (event == LV_EVENT_APPLY) 
+    {
+        destory_message_input_screen(&model);
+    }
+
+    printf("event %d\n", event);
+}
+
+
 int main() {
 
     lv_init();
@@ -50,57 +81,27 @@ int main() {
     init_display();
     init_mouse();
 
+    lv_task_create(memory_monitor, 3000, LV_TASK_PRIO_MID, NULL);
 
-    lv_theme_t *th = lv_theme_alien_init(0, NULL);
+
+    lv_theme_t *th = lv_theme_material_init(0, NULL);
     lv_theme_set_current(th);
 
-    lv_style_copy(&page_style, th->style.bg);
-
-    page_style.body.opa = LV_OPA_TRANSP;
-    page_style.body.border.width = 2;
-//    page_style.body.border.opa= LV_OPA_TRANSP;;
-
-    page_style.text.opa = LV_OPA_COVER;
-
-    lv_obj_t *scr = lv_obj_create(NULL, NULL);
-    lv_scr_load(scr);
-
-    lv_obj_t *page = lv_page_create(scr, NULL);
-    lv_page_set_scrl_layout(page, LV_LAYOUT_COL_L);
-    lv_obj_set_style(page, &page_style);
-    lv_obj_set_size(page, lv_obj_get_width(scr), lv_obj_get_height(scr) - 60);
-    lv_obj_align(page, scr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
-
-
-    lv_obj_t *input = lv_ta_create(scr, NULL);
-    lv_ta_set_one_line(input, true);
-    lv_ta_set_cursor_type(input, LV_CURSOR_BLOCK);
-    lv_ta_set_placeholder_text(input, "Write message");
-    lv_ta_set_text(input, "");
-
-    lv_obj_set_width(input, lv_obj_get_width(scr) - 12);
-    lv_obj_align(input, scr, LV_ALIGN_IN_BOTTOM_MID, 0, -2);
+    th->style.kb.bg->text.font = &lv_font_roboto_16;
 
 
 
-    for (int i = 0; i < 16; i++) 
-    {
-        char str[3];
-        sprintf(str, "recevied msg %d",i);
 
-        lv_obj_t *lbl = lv_label_create(page, NULL);
-        lv_obj_set_width(lbl, lv_page_get_fit_width(page));
+    create_message_input_screen(&model);
+    lv_scr_load(model.screen);
 
-        lv_label_set_static_text(lbl, str);
-
-        lv_page_focus(page, lbl, LV_ANIM_OFF);
-    };
+    lv_obj_set_event_cb(model.keyboard, on_keyboard_ok);
 
 
     while(1) {
         lv_task_handler();
-        usleep(5 * 1000);
 
+        usleep(5 * 1000);
         lv_tick_inc(5);
     }
 

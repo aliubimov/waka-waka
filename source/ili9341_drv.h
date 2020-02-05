@@ -99,32 +99,43 @@ typedef struct ili9341_handle {
 	void (*write_reg8)(uint8_t cmd, uint8_t data);
 	void (*write_reg16)(uint8_t cmd, uint16_t data);
 	void (*write_data_dma)(uint8_t *data, size_t size);
+    void (*write_reset)(uint8_t val);
 } ili9341_handle_t;
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
+/*
+ * @brief Hardreset controller using write_reset callback function defined in handle
+ */
+void ili9341_hard_reset(ili9341_handle_t *handle);
 
 /*
  * @brief Creates default handle for controller
+ * @param handle controller handle
  */
 void ili9341_init_default(ili9341_handle_t *handle);
 
 /*
  * @brief Initialize controller
+ * @param handle controller handle
  */
 void ili9341_init_controller(ili9341_handle_t *handle);
 
 /*
  * @brief Resets controller via soft-reset
+ * @param handle controller handle
  */
 void ili3941_soft_reset(ili9341_handle_t *handle);
 
 /*
  * @brief Enable screen
+ * @param handle controller handle
  */
 void ili9341_screen_on(ili9341_handle_t *handle);
+
+
 
 #if defined(__cplusplus)
 }

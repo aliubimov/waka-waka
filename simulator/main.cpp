@@ -63,14 +63,14 @@ input_message_screen_t model;
 
 static void on_keyboard_ok(lv_obj_t *kb, lv_event_t event)
 {
-    lv_kb_def_event_cb(kb, event);
 
     if (event == LV_EVENT_APPLY) 
     {
         destory_message_input_screen(&model);
+        return;
     }
 
-    printf("event %d\n", event);
+    lv_kb_def_event_cb(kb, event);
 }
 
 
@@ -93,10 +93,9 @@ int main() {
 
 
     create_message_input_screen(&model);
-    lv_scr_load(model.screen);
-
     lv_obj_set_event_cb(model.keyboard, on_keyboard_ok);
 
+    lv_scr_load(model.screen);
 
     while(1) {
         lv_task_handler();

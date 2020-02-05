@@ -72,7 +72,7 @@ typedef int16_t lv_coord_t;
 #define LV_MEM_CUSTOM      0
 #if LV_MEM_CUSTOM == 0
 /* Size of the memory used by `lv_mem_alloc` in bytes (>= 2kB)*/
-#  define LV_MEM_SIZE    (16U * 1024U)
+#  define LV_MEM_SIZE    (32U * 1024U)
 
 /* Complier prefix for a big array declaration */
 #  define LV_MEM_ATTR
@@ -190,7 +190,7 @@ typedef void * lv_img_decoder_user_data_t;
 /* With size optimization (-Os) the compiler might not align data to
  * 4 or 8 byte boundary. This alignment will be explicitly applied where needed.
  * E.g. __attribute__((aligned(4))) */
-#define LV_ATTRIBUTE_MEM_ALIGN __attribute__((aligned(4)))
+#define LV_ATTRIBUTE_MEM_ALIGN
 
 /* Attribute to mark large constant arrays for example
  * font's bitmaps */
@@ -375,7 +375,7 @@ typedef void * lv_font_user_data_t;
  * Allows mixing Left-to-Right and Right-to-Left texts.
  * The direction will be processed according to the Unicode Bidirectioanl Algorithm:
  * https://www.w3.org/International/articles/inline-bidi-markup/uba-basics*/
-#define LV_USE_BIDI     1
+#define LV_USE_BIDI     0
 #if LV_USE_BIDI
 /* Set the default direction. Supported values:
  * `LV_BIDI_DIR_LTR` Left-to-Right

@@ -10,7 +10,7 @@
 #include "lv_drivers/display/monitor.h"
 #include "lv_drivers/indev/mouse.h"
 
-#include "../source/app/user_interface.h"
+#include "../source/app/waka.h"
 
 static lv_disp_buf_t disp_buf1;
 static lv_color_t buf1_1[320*10];
@@ -66,7 +66,7 @@ static void on_keyboard_ok(lv_obj_t *kb, lv_event_t event)
 
     if (event == LV_EVENT_APPLY) 
     {
-        destory_message_input_screen(&model);
+        destroy_message_input_screen(&model);
         return;
     }
 

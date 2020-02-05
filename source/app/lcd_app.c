@@ -18,6 +18,7 @@
 
 #include "fsl_debug_console.h"
 
+#include "waka.h"
 
 #define GPIO_PIN_RESET	1
 #define GPIO_PIN_CDX	2

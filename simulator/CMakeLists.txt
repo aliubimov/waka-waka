@@ -14,7 +14,7 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
 find_package(SDL2 REQUIRED SDL2)
 include_directories(${SDL2_INCLUDE_DIRS})
 
-set(USER_INTERFACE "../source/app/user_interface.c" "../source/app/user_interface.h")
+set(USER_INTERFACE "../source/app/waka.c" "../source/app/waka.h")
 
 add_executable(main main.cpp terminus.c ${USER_INTERFACE} ${SOURCES} ${INCLUDES})
 

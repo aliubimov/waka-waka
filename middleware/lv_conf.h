@@ -75,11 +75,11 @@ typedef int16_t lv_coord_t;
 #  define LV_MEM_SIZE    (16U * 1024U)
 
 /* Complier prefix for a big array declaration */
-#  define LV_MEM_ATTR        __attribute__((section(".bss.NCACHE_REGION")))
+#  define LV_MEM_ATTR        
 
 /* Set an address for the memory pool instead of allocating it as an array.
  * Can be in external SRAM too. */
-#  define LV_MEM_ADR          0
+#  define LV_MEM_ADR          0x20208000
 
 /* Automatically defrag. on free. Defrag. means joining the adjacent free cells. */
 #  define LV_MEM_AUTO_DEFRAG  1

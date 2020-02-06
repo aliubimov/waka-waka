@@ -53,4 +53,4 @@ SDI(MOSI) -> J57[8]
 
 SDO(MISO) -> J57[10]
 
-IRQ -> J26[10]
+IRQ -> J26[8]

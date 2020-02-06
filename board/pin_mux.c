@@ -26,6 +26,7 @@ pin_labels:
 
 #include "fsl_common.h"
 #include "fsl_iomuxc.h"
+#include "fsl_gpio.h"
 #include "pin_mux.h"
 
 /* FUNCTION ************************************************************************************************************
@@ -51,6 +52,7 @@ BOARD_InitPins:
   - {pin_num: '58', peripheral: LPSPI1, signal: PCS1, pin_signal: GPIO_AD_02}
   - {pin_num: '12', peripheral: GPIO1, signal: 'gpiomux_io, 01', pin_signal: GPIO_01}
   - {pin_num: '11', peripheral: GPIO1, signal: 'gpiomux_io, 02', pin_signal: GPIO_02}
+  - {pin_num: '43', peripheral: GPIO1, signal: 'gpiomux_io, 28', pin_signal: GPIO_AD_14, direction: INPUT, open_drain: Disable, pull_up_down_config: Pull_Up_100K_Ohm}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 
@@ -62,6 +64,15 @@ BOARD_InitPins:
  * END ****************************************************************************************************************/
 void BOARD_InitPins(void) {
   CLOCK_EnableClock(kCLOCK_Iomuxc);           /* iomuxc clock (iomuxc_clk_enable): 0x03U */
+
+  /* GPIO configuration of ADC12_6 on GPIO_AD_14 (pin 43) */
+  gpio_pin_config_t ADC12_6_config = {
+      .direction = kGPIO_DigitalInput,
+      .outputLogic = 0U,
+      .interruptMode = kGPIO_NoIntmode
+  };
+  /* Initialize GPIO functionality on GPIO_AD_14 (pin 43) */
+  GPIO_PinInit(GPIO1, 28U, &ADC12_6_config);
 
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_01_GPIOMUX_IO01,            /* GPIO_01 is configured as GPIOMUX_IO01 */
@@ -84,6 +95,19 @@ void BOARD_InitPins(void) {
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_06_LPSPI1_SCK,           /* GPIO_AD_06 is configured as LPSPI1_SCK */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_AD_14_GPIOMUX_IO28,         /* GPIO_AD_14 is configured as GPIOMUX_IO28 */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinConfig(
+      IOMUXC_GPIO_AD_14_GPIOMUX_IO28,         /* GPIO_AD_14 PAD functional properties : */
+      0x90A0U);                               /* Slew Rate Field: Slow Slew Rate
+                                                 Drive Strength Field: R0/4
+                                                 Speed Field: fast(150MHz)
+                                                 Open Drain Enable Field: Open Drain Disabled
+                                                 Pull / Keep Enable Field: Pull/Keeper Enabled
+                                                 Pull / Keep Select Field: Keeper
+                                                 Pull Up / Down Config. Field: 100K Ohm Pull Up
+                                                 Hyst. Enable Field: Hysteresis Disabled */
 }
 
 

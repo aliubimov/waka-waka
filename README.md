@@ -45,10 +45,12 @@ GRND -> J60[14]
 Touch Pin Setup
 --- 
 
-CS -> J26[10]
+CS -> J26[12]
 
 SCK -> J57[12]
 
 SDI(MOSI) -> J57[8]
 
 SDO(MISO) -> J57[10]
+
+IRQ -> J26[10]

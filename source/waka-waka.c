@@ -40,6 +40,7 @@
 #include "MIMXRT1011.h"
 #include "fsl_debug_console.h"
 /* TODO: insert other include files here. */
+#include "fsl_flexram.h"
 
 /* TODO: insert other definitions and declarations here. */
 #include "lcd_app.h"
@@ -55,6 +56,8 @@ int main(void) {
     BOARD_InitBootPeripherals();
   	/* Init FSL debug console. */
     BOARD_InitDebugConsole();
+
+    FLEXRAM_Init(FLEXRAM);
 
     PRINTF("Hello World\n");
 

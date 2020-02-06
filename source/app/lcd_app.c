@@ -18,16 +18,24 @@
 
 #include "fsl_debug_console.h"
 
+#include "middleware/lvgl/src/lv_misc/lv_math.h"
 #include "waka.h"
 
 #define GPIO_PIN_RESET	1
 #define GPIO_PIN_CDX	2
+#define GPIO_PIN_TIRQ 	28
+
+#define TOUCH_X_MIN		420U
+#define TOUCH_Y_MIN		320U
+#define TOUCH_X_MAX 	3800U
+#define TOUCH_Y_MAX		3800U
 
 AT_NONCACHEABLE_SECTION_INIT(lpspi_master_edma_handle_t g_m_edma_handle) = {0};
 edma_handle_t lpspiEdmaMasterRxRegToRxDataHandle;
 edma_handle_t lpspiEdmaMasterTxDataToTxRegHandle;
 
 volatile static bool in_progress = false;
+
 
 void LPSPI_MasterUserCallback(LPSPI_Type *base, lpspi_master_edma_handle_t *handle, status_t status, void *userData)
 {
@@ -45,7 +53,7 @@ void write_cmd(uint8_t cmd)
 
 	LPSPI1_txBuffer[0] = cmd;
     LPSPI1_transfer.dataSize = 1;
-    LPSPI1_transfer.configFlags = kLPSPI_MasterPcs0;
+    LPSPI1_transfer.configFlags = kLPSPI_MasterPcsContinuous | kLPSPI_MasterPcs0;
     while (LPSPI_GetStatusFlags(LPSPI1) & kLPSPI_ModuleBusyFlag) {};
     assert (LPSPI_MasterTransferBlocking(LPSPI1, &LPSPI1_transfer) == kStatus_Success);
 
@@ -62,7 +70,7 @@ void write_data(uint8_t data)
 
 	LPSPI1_txBuffer[0] = data;
     LPSPI1_transfer.dataSize = 1;
-    LPSPI1_transfer.configFlags = kLPSPI_MasterPcs0;
+    LPSPI1_transfer.configFlags = kLPSPI_MasterPcsContinuous | kLPSPI_MasterPcs0;
     while (LPSPI_GetStatusFlags(LPSPI1) & kLPSPI_ModuleBusyFlag) {};
     assert (LPSPI_MasterTransferBlocking(LPSPI1, &LPSPI1_transfer) == kStatus_Success);
 }
@@ -96,7 +104,7 @@ void write_reg8(uint8_t cmd, uint8_t data)
 
 	LPSPI1_txBuffer[0] = cmd;
     LPSPI1_transfer.dataSize = 1;
-    LPSPI1_transfer.configFlags = kLPSPI_MasterPcs0;
+    LPSPI1_transfer.configFlags = kLPSPI_MasterPcsContinuous | kLPSPI_MasterPcs0;
     while (LPSPI_GetStatusFlags(LPSPI1) & kLPSPI_ModuleBusyFlag) {};
     assert (LPSPI_MasterTransferBlocking(LPSPI1, &LPSPI1_transfer) == kStatus_Success);
 
@@ -104,7 +112,7 @@ void write_reg8(uint8_t cmd, uint8_t data)
 
 	LPSPI1_txBuffer[0] = data;
     LPSPI1_transfer.dataSize = 1;
-    LPSPI1_transfer.configFlags = kLPSPI_MasterPcs0;
+    LPSPI1_transfer.configFlags = kLPSPI_MasterPcsContinuous | kLPSPI_MasterPcs0;
     while (LPSPI_GetStatusFlags(LPSPI1) & kLPSPI_ModuleBusyFlag) {};
     assert (LPSPI_MasterTransferBlocking(LPSPI1, &LPSPI1_transfer) == kStatus_Success);
 }
@@ -127,9 +135,13 @@ void init_dcx() {
 	gpio_pin_config_t dcx_config = {
 			.direction = kGPIO_DigitalOutput
 	};
+	gpio_pin_config_t touch_irq_config = {
+			.direction = kGPIO_DigitalInput
+	};
 
 	GPIO_PinInit(GPIO1, GPIO_PIN_CDX, &dcx_config);
 	GPIO_PinInit(GPIO1, GPIO_PIN_RESET, &dcx_config);
+	GPIO_PinInit(GPIO1, GPIO_PIN_TIRQ, &touch_irq_config);
 
 
 	GPIO_PinWrite(GPIO1, GPIO_PIN_RESET, 1);
@@ -206,11 +218,10 @@ void init_lcd()
 }
 
 static lv_disp_buf_t disp_buf;
-static lv_color_t buf_1[320*5];
-static lv_color_t buf_2[320*5];
 static lv_indev_drv_t indev_drv;
 
-static lv_style_t page_style;
+static lv_color_t buf_1[320*5];
+static lv_color_t buf_2[320*5];
 
 static bool initialized = false;
 
@@ -228,6 +239,115 @@ void PIT_IRQHANDLER(void) {
 	PIT_ClearStatusFlags(PIT, PIT_CHANNEL_0, kPIT_TimerFlag);
 }
 
+#define XPT2046_AVG		4
+
+static int16_t x, y;
+uint8_t avg_last;
+static int16_t avg_buf_x[XPT2046_AVG];
+static int16_t avg_buf_y[XPT2046_AVG];
+
+static void xpt2046_avg(int16_t * x, int16_t * y)
+{
+    /*Shift out the oldest data*/
+    uint8_t i;
+    for(i = XPT2046_AVG - 1; i > 0 ; i--) {
+        avg_buf_x[i] = avg_buf_x[i - 1];
+        avg_buf_y[i] = avg_buf_y[i - 1];
+    }
+
+    /*Insert the new point*/
+    avg_buf_x[0] = *x;
+    avg_buf_y[0] = *y;
+    if(avg_last < XPT2046_AVG) avg_last++;
+
+    /*Sum the x and y coordinates*/
+    int32_t x_sum = 0;
+    int32_t y_sum = 0;
+    for(i = 0; i < avg_last ; i++) {
+        x_sum += avg_buf_x[i];
+        y_sum += avg_buf_y[i];
+    }
+
+    /*Normalize the sums*/
+    (*x) = (int32_t)x_sum / avg_last;
+    (*y) = (int32_t)y_sum / avg_last;
+}
+
+bool touch_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data) {
+
+	int state = ! GPIO_PinRead(GPIO1, GPIO_PIN_TIRQ);
+	data->state = state ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
+
+	if (state) {
+		while (in_progress) {
+			__NOP();
+		};
+
+		LPSPI1_txBuffer[0] = 0b10010000;
+		LPSPI1_txBuffer[1] = 0x00;
+		LPSPI1_txBuffer[2] = 0b11010000;
+		LPSPI1_txBuffer[3] = 0x00;
+
+		LPSPI1_transfer.dataSize = 5;
+		LPSPI1_transfer.configFlags = kLPSPI_MasterPcsContinuous | kLPSPI_MasterPcs1;
+
+		while (LPSPI_GetStatusFlags(LPSPI1) & kLPSPI_ModuleBusyFlag) {};
+		assert (LPSPI_MasterTransferBlocking(LPSPI1, &LPSPI1_transfer) == kStatus_Success);
+
+		x = ((LPSPI1_rxBuffer[1] << 8) | LPSPI1_rxBuffer[2]) >> 3;
+		y = ((LPSPI1_rxBuffer[3] << 8) | LPSPI1_rxBuffer[4]) >> 3;
+
+		if (x > TOUCH_X_MIN)
+		{
+			x -= TOUCH_X_MIN;
+		} else {
+			x = 0;
+		}
+		if (y > TOUCH_Y_MIN)
+		{
+			y -= TOUCH_Y_MIN;
+		} else {
+			y = 0;
+		}
+
+		x = (x * 320) / (TOUCH_X_MAX - TOUCH_X_MIN);
+		y = (y * 240) / (TOUCH_Y_MAX - TOUCH_Y_MIN);
+
+		if (x > 320) {
+			x = 319;
+		}
+
+		if (y > 240) {
+			y = 239;
+		}
+
+		xpt2046_avg(&x, &y);
+	} else {
+		avg_last = 0;
+	}
+
+	data->point.x = x;
+	data->point.y = y;
+
+	return false;
+}
+
+void init_touch() {
+
+    lv_indev_drv_init(&indev_drv);
+    indev_drv.type = LV_INDEV_TYPE_POINTER;
+    indev_drv.read_cb = touch_read;
+
+    lv_indev_drv_register(&indev_drv);
+}
+
+
+void usleep(int ms) {
+	while (--ms) {
+		__NOP();
+	}
+}
+
 
 void app_run() {
 
@@ -240,86 +360,30 @@ void app_run() {
     lv_disp_drv_t disp_drv;
     lv_disp_drv_init(&disp_drv);
 
-
     disp_drv.rotated = 1;
     disp_drv.buffer = &disp_buf;
     disp_drv.flush_cb = lcd_flush;
 
     lv_disp_drv_register(&disp_drv);
 
-    lv_theme_t *th = lv_theme_alien_init(0, NULL);
+    init_touch();
+
+    lv_theme_t *th = lv_theme_material_init(0, NULL);
     lv_theme_set_current(th);
 
-    lv_style_copy(&page_style, th->style.bg);
-
-    page_style.body.opa = LV_OPA_TRANSP;
-    page_style.body.border.width = 2;
-//    page_style.body.border.opa= LV_OPA_TRANSP;;
-
-    page_style.text.opa = LV_OPA_COVER;
-
-    lv_obj_t *scr = lv_obj_create(NULL, NULL);
-    lv_scr_load(scr);
-
-    lv_obj_t *page = lv_page_create(scr, NULL);
-    lv_page_set_scrl_layout(page, LV_LAYOUT_COL_L);
-    lv_obj_set_style(page, &page_style);
-    lv_obj_set_size(page, lv_obj_get_width(scr), lv_obj_get_height(scr) - 60);
-    lv_obj_align(page, scr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+    th->style.kb.bg->text.font = &lv_font_roboto_16;
 
 
-    lv_obj_t *input = lv_ta_create(scr, NULL);
-    lv_ta_set_one_line(input, true);
-    lv_ta_set_cursor_type(input, LV_CURSOR_BLOCK);
-    lv_ta_set_placeholder_text(input, "Write message");
-    lv_ta_set_text(input, "");
+    input_message_screen_t model;
+    create_message_input_screen(&model);
 
-    lv_obj_set_width(input, lv_obj_get_width(scr) - 12);
-    lv_obj_align(input, scr, LV_ALIGN_IN_BOTTOM_MID, 0, -2);
-
-
-    /*
-
-    for (int i = 0; i < 6; i++)
-    {
-        char str[3];
-        sprintf(str, "recevied msg %d",i);
-
-        lv_obj_t *lbl = lv_label_create(page, NULL);
-        lv_obj_set_width(lbl, lv_page_get_fit_width(page));
-
-        lv_label_set_text(lbl, str);
-        lv_page_focus(page, lbl, LV_ANIM_OFF);
-    };
-    */
-
-    lv_obj_t *lbl_x = lv_label_create(page, NULL);
-    lv_obj_t *lbl_y = lv_label_create(page, NULL);
-
+    lv_scr_load(model.screen);
 
     initialized = true;
 
     while (1)
     {
 		lv_task_handler();
-
-		LPSPI1_txBuffer[0] = 0b10010000;
-		LPSPI1_txBuffer[1] = 0x00;
-		LPSPI1_txBuffer[2] = 0b11010000;
-		LPSPI1_txBuffer[3] = 0x00;
-
-		while (in_progress) {};
-
-	    LPSPI1_transfer.dataSize = 5;
-	    LPSPI1_transfer.configFlags = kLPSPI_MasterPcs1;
-	    while (LPSPI_GetStatusFlags(LPSPI1) & kLPSPI_ModuleBusyFlag) {};
-	    assert (LPSPI_MasterTransferBlocking(LPSPI1, &LPSPI1_transfer) == kStatus_Success);
-
-	    uint16_t x = (LPSPI1_rxBuffer[1] << 8) | LPSPI1_rxBuffer[2];
-	    uint16_t y = (LPSPI1_rxBuffer[3] << 8) | LPSPI1_rxBuffer[4];
-
-	    lv_label_set_text_fmt(lbl_x, "%x", x);
-	    lv_label_set_text_fmt(lbl_y, "%x", y);
     }
 }
 

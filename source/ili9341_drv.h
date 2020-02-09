@@ -107,7 +107,7 @@ extern "C" {
 #endif
 
 /*
- * @brief Hardreset controller using write_reset callback function defined in handle
+ * @brief Hard reset controller using write_reset callback function defined in handle
  */
 void ili9341_hard_reset(ili9341_handle_t *handle);
 
@@ -130,12 +130,22 @@ void ili9341_init_controller(ili9341_handle_t *handle);
 void ili3941_soft_reset(ili9341_handle_t *handle);
 
 /*
+ * @brief Sleep Out
+ * @param handle controller handle
+ */
+void ili9341_sleep_out(ili9341_handle_t *handle);
+
+/*
  * @brief Enable screen
  * @param handle controller handle
  */
 void ili9341_screen_on(ili9341_handle_t *handle);
 
-
+/*
+ * @brief Disable screen
+ * @param handle controller handle
+ */
+void ili9341_screen_onf(ili9341_handle_t *handle);
 
 #if defined(__cplusplus)
 }

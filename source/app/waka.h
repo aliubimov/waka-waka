@@ -13,7 +13,7 @@ typedef struct {
     lv_obj_t *keyboard;
 } input_message_screen_t;
 
-void main_screen();
+void main_screen(lv_obj_t *scr);
 
 void create_message_input_screen(input_message_screen_t *model);
 

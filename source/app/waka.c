@@ -1,9 +1,11 @@
 #include "waka.h"
 
+LV_IMG_DECLARE(logo);
 
-void main_screen()
+void main_screen(lv_obj_t *scr)
 {
-
+	lv_obj_t *img = lv_img_create(scr, NULL);
+	lv_img_set_src(img, &logo);
 }
 
 void create_message_input_screen(input_message_screen_t *model)

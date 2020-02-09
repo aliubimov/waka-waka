@@ -18,11 +18,8 @@
 
 #include "fsl_debug_console.h"
 
-#include "middleware/lvgl/src/lv_misc/lv_math.h"
 #include "waka.h"
 
-#define GPIO_PIN_RESET	1
-#define GPIO_PIN_CDX	2
 #define GPIO_PIN_TIRQ 	28
 
 #define TOUCH_X_MIN		420U
@@ -30,138 +27,18 @@
 #define TOUCH_X_MAX 	3800U
 #define TOUCH_Y_MAX		3800U
 
-AT_NONCACHEABLE_SECTION_INIT(lpspi_master_edma_handle_t g_m_edma_handle) = {0};
-edma_handle_t lpspiEdmaMasterRxRegToRxDataHandle;
-edma_handle_t lpspiEdmaMasterTxDataToTxRegHandle;
 
-volatile static bool in_progress = false;
+extern void write_reg8(uint8_t cmd, uint8_t data);
+extern void write_data_dma(uint8_t *data, size_t size);
+extern void write_data(uint8_t data);
+extern void write_cmd(uint8_t cmd);
+extern void write_reset(uint8_t val);
+extern void init_dma();
+extern void init_dcx();
 
-
-void LPSPI_MasterUserCallback(LPSPI_Type *base, lpspi_master_edma_handle_t *handle, status_t status, void *userData)
-{
-    in_progress = false;
-}
-
-
-void write_cmd(uint8_t cmd)
-{
-	while (in_progress) {
-		__NOP();
-	}
-
-	GPIO_PinWrite(GPIO1, GPIO_PIN_CDX, 0);
-
-	LPSPI1_txBuffer[0] = cmd;
-    LPSPI1_transfer.dataSize = 1;
-    LPSPI1_transfer.configFlags = kLPSPI_MasterPcsContinuous | kLPSPI_MasterPcs0;
-    while (LPSPI_GetStatusFlags(LPSPI1) & kLPSPI_ModuleBusyFlag) {};
-    assert (LPSPI_MasterTransferBlocking(LPSPI1, &LPSPI1_transfer) == kStatus_Success);
-
-    GPIO_PinWrite(GPIO1, GPIO_PIN_CDX, 1);
-}
-
-void write_data(uint8_t data)
-{
-	while (in_progress) {
-		__NOP();
-	}
-
-	GPIO_PinWrite(GPIO1, GPIO_PIN_CDX, 1);
-
-	LPSPI1_txBuffer[0] = data;
-    LPSPI1_transfer.dataSize = 1;
-    LPSPI1_transfer.configFlags = kLPSPI_MasterPcsContinuous | kLPSPI_MasterPcs0;
-    while (LPSPI_GetStatusFlags(LPSPI1) & kLPSPI_ModuleBusyFlag) {};
-    assert (LPSPI_MasterTransferBlocking(LPSPI1, &LPSPI1_transfer) == kStatus_Success);
-}
-
-void write_data_dma(uint8_t *data, size_t size)
-{
-	lpspi_transfer_t transfer;
-
-	transfer.txData = data;
-	transfer.rxData = NULL;
-	transfer.dataSize = size;
-	transfer.configFlags = kLPSPI_MasterPcsContinuous | kLPSPI_MasterPcs0;
-
-	while (in_progress) {
-		__NOP();
-	}
-
-	in_progress = true;
-
-	GPIO_PinWrite(GPIO1, GPIO_PIN_CDX, 1);
-	LPSPI_MasterTransferEDMA(LPSPI1, &g_m_edma_handle, &transfer);
-}
-
-void write_reg8(uint8_t cmd, uint8_t data)
-{
-	while (in_progress) {
-		__NOP();
-	}
-
-	GPIO_PinWrite(GPIO1, GPIO_PIN_CDX, 0);
-
-	LPSPI1_txBuffer[0] = cmd;
-    LPSPI1_transfer.dataSize = 1;
-    LPSPI1_transfer.configFlags = kLPSPI_MasterPcsContinuous | kLPSPI_MasterPcs0;
-    while (LPSPI_GetStatusFlags(LPSPI1) & kLPSPI_ModuleBusyFlag) {};
-    assert (LPSPI_MasterTransferBlocking(LPSPI1, &LPSPI1_transfer) == kStatus_Success);
-
-	GPIO_PinWrite(GPIO1, GPIO_PIN_CDX, 1);
-
-	LPSPI1_txBuffer[0] = data;
-    LPSPI1_transfer.dataSize = 1;
-    LPSPI1_transfer.configFlags = kLPSPI_MasterPcsContinuous | kLPSPI_MasterPcs0;
-    while (LPSPI_GetStatusFlags(LPSPI1) & kLPSPI_ModuleBusyFlag) {};
-    assert (LPSPI_MasterTransferBlocking(LPSPI1, &LPSPI1_transfer) == kStatus_Success);
-}
+extern volatile bool in_progress;
 
 static ili9341_handle_t handle;
-
-void init_dma() {
-    memset(&(lpspiEdmaMasterRxRegToRxDataHandle), 0, sizeof(lpspiEdmaMasterRxRegToRxDataHandle));
-    memset(&(lpspiEdmaMasterTxDataToTxRegHandle), 0, sizeof(lpspiEdmaMasterTxDataToTxRegHandle));
-
-	EDMA_CreateHandle(&lpspiEdmaMasterTxDataToTxRegHandle, DMA0, DMA0_CH0_DMA_CHANNEL);
-	EDMA_CreateHandle(&lpspiEdmaMasterRxRegToRxDataHandle, DMA0, DMA0_CH1_DMA_CHANNEL);
-
-	LPSPI_MasterTransferCreateHandleEDMA(LPSPI1, &g_m_edma_handle, LPSPI_MasterUserCallback, NULL, &lpspiEdmaMasterRxRegToRxDataHandle, &lpspiEdmaMasterTxDataToTxRegHandle);
-	in_progress = false;
-}
-
-
-void init_dcx() {
-	gpio_pin_config_t dcx_config = {
-			.direction = kGPIO_DigitalOutput
-	};
-	gpio_pin_config_t touch_irq_config = {
-			.direction = kGPIO_DigitalInput
-	};
-
-	GPIO_PinInit(GPIO1, GPIO_PIN_CDX, &dcx_config);
-	GPIO_PinInit(GPIO1, GPIO_PIN_RESET, &dcx_config);
-	GPIO_PinInit(GPIO1, GPIO_PIN_TIRQ, &touch_irq_config);
-
-
-	GPIO_PinWrite(GPIO1, GPIO_PIN_RESET, 1);
-
-	for (uint32_t i = 0; i < 500000; ++i) {
-		__NOP();
-	}
-
-	GPIO_PinWrite(GPIO1, GPIO_PIN_RESET, 0);
-
-	for (uint32_t i = 0; i < 500000; ++i) {
-		__NOP();
-	}
-
-	GPIO_PinWrite(GPIO1, GPIO_PIN_RESET, 1);
-
-	for (uint32_t i = 0; i < 500000; ++i) {
-		__NOP();
-	}
-}
 
 void lcd_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t *color_p)
 {
@@ -209,12 +86,13 @@ void init_lcd()
 	handle.write_data = write_data;
 	handle.write_reg8 = write_reg8;
 	handle.write_data_dma = write_data_dma;
+	handle.write_reset = write_reset;
 
-	ili3941_soft_reset(&handle);
+	ili9341_hard_reset(&handle);
 	ili9341_init_controller(&handle);
+	ili9341_sleep_out(&handle);
 
 	ili9341_screen_on(&handle);
-
 }
 
 static lv_disp_buf_t disp_buf;
@@ -333,6 +211,11 @@ bool touch_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data) {
 }
 
 void init_touch() {
+	gpio_pin_config_t touch_irq_config = {
+			.direction = kGPIO_DigitalInput
+	};
+
+	GPIO_PinInit(GPIO1, GPIO_PIN_TIRQ, &touch_irq_config);
 
     lv_indev_drv_init(&indev_drv);
     indev_drv.type = LV_INDEV_TYPE_POINTER;
@@ -374,10 +257,12 @@ void app_run() {
     th->style.kb.bg->text.font = &lv_font_roboto_16;
 
 
-    input_message_screen_t model;
-    create_message_input_screen(&model);
+//    input_message_screen_t model;
+//    create_message_input_screen(&model);
+//
+//    lv_scr_load(model.screen);
 
-    lv_scr_load(model.screen);
+    main_screen(lv_scr_act());
 
     initialized = true;
 

@@ -33,13 +33,21 @@ void ili9341_init_controller(ili9341_handle_t *handle)
 	handle->write_reg8(ILI9341_MADCTL, 0xe8);
 }
 
-void ili9341_screen_on(ili9341_handle_t *handle)
+void ili9341_sleep_out(ili9341_handle_t *handle)
 {
 	handle->write_reg8(ILI9341_SLPOUT, 0x80);
 	usleep(1500000);
+}
 
+void ili9341_screen_on(ili9341_handle_t *handle)
+{
 	handle->write_reg8(ILI9341_DISPON, 0x80);
     usleep(1500000);
+}
+
+void ili9341_screen_off(ili9341_handle_t *handle)
+{
+	handle->write_reg8(ILI9341_DISPOFF, 0x80);
 }
 
 void ili9341_write_buffer(ili9341_handle_t *handle, uint8_t buf, size_t buf_size)

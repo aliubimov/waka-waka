@@ -262,7 +262,7 @@ void app_run() {
 //
 //    lv_scr_load(model.screen);
 
-    main_screen(lv_scr_act());
+    waka_splash_screen(lv_scr_act());
 
     initialized = true;
 

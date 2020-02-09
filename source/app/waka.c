@@ -2,10 +2,28 @@
 
 LV_IMG_DECLARE(logo);
 
-void main_screen(lv_obj_t *scr)
+static void clear_splash_screen(lv_task_t *self)
 {
-	lv_obj_t *img = lv_img_create(scr, NULL);
-	lv_img_set_src(img, &logo);
+    waka_splash_screen_t *model = (waka_splash_screen_t*) self->user_data;
+    lv_obj_del(model->img);
+
+    model->callback(model->screen);
+}
+
+void waka_splash_screen(waka_splash_screen_t *model, lv_obj_t *scr)
+{
+	model->screen = scr;
+    model->img = lv_img_create(model->screen, NULL);
+	lv_img_set_src(model->img, &logo);
+
+    // clear splash screen after delay
+    lv_task_t *clear_task = lv_task_create(clear_splash_screen, model->delay, LV_TASK_PRIO_LOWEST, model);
+    lv_task_once(clear_task);
+}
+
+void destory_splash(waka_splash_screen_t *model)
+{
+    lv_obj_del(model->img);
 }
 
 void create_message_input_screen(input_message_screen_t *model)

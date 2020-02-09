@@ -73,6 +73,14 @@ static void on_keyboard_ok(lv_obj_t *kb, lv_event_t event)
     lv_kb_def_event_cb(kb, event);
 }
 
+static void switch_to_main(lv_obj_t *screen)
+{
+
+    create_message_input_screen(&model);
+    lv_obj_set_event_cb(model.keyboard, on_keyboard_ok);
+
+    lv_scr_load(model.screen);
+}
 
 int main() {
 
@@ -84,7 +92,7 @@ int main() {
     lv_task_create(memory_monitor, 3000, LV_TASK_PRIO_MID, NULL);
 
 
-    lv_theme_t *th = lv_theme_alien_init(0, NULL);
+    lv_theme_t *th = lv_theme_material_init(0, NULL);
     lv_theme_set_current(th);
 
     th->style.kb.bg->text.font = &lv_font_roboto_16;
@@ -92,12 +100,12 @@ int main() {
     th->style.kb.btn.pr->text.font = &lv_font_roboto_16;
 
 
+    waka_splash_screen_t splash;
+    splash.delay = 3000;
+    splash.callback = switch_to_main;
 
+    waka_splash_screen(&splash, lv_scr_act());
 
-    create_message_input_screen(&model);
-    lv_obj_set_event_cb(model.keyboard, on_keyboard_ok);
-
-    lv_scr_load(model.screen);
 
     while(1) {
         lv_task_handler();

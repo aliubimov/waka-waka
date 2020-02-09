@@ -13,7 +13,16 @@ typedef struct {
     lv_obj_t *keyboard;
 } input_message_screen_t;
 
-void main_screen(lv_obj_t *scr);
+typedef struct {
+    lv_obj_t *screen;
+    lv_obj_t *img;
+    uint32_t delay;
+    void (*callback)(lv_obj_t *screen);
+} waka_splash_screen_t;
+
+void waka_splash_screen(waka_splash_screen_t *model, lv_obj_t *scr);
+
+void destory_splash(waka_splash_screen_t *model);
 
 void create_message_input_screen(input_message_screen_t *model);
 

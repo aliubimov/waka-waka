@@ -20,13 +20,9 @@ typedef struct {
     void (*callback)(lv_obj_t *screen);
 } waka_splash_screen_t;
 
-void waka_splash_screen(waka_splash_screen_t *model, lv_obj_t *scr);
+lv_obj_t* waka_splash_screen(waka_splash_screen_t *model);
 
-void destory_splash(waka_splash_screen_t *model);
-
-void create_message_input_screen(input_message_screen_t *model);
-
-void destroy_message_input_screen(input_message_screen_t* model);
+lv_obj_t* create_message_input_screen(input_message_screen_t *model);
 
 #if defined(__cplusplus)
 }

@@ -58,28 +58,31 @@ static void memory_monitor(lv_task_t * param)
 
 }
 
-input_message_screen_t model;
 
+static lv_obj_t *screen;
 
 static void on_keyboard_ok(lv_obj_t *kb, lv_event_t event)
 {
 
     if (event == LV_EVENT_APPLY) 
     {
-        destroy_message_input_screen(&model);
         return;
     }
 
     lv_kb_def_event_cb(kb, event);
 }
 
-static void switch_to_main(lv_obj_t *screen)
+static void switch_to_main(lv_obj_t *r)
 {
 
-    create_message_input_screen(&model);
+    lv_obj_del(screen);
+
+    input_message_screen_t model;
+
+    screen = create_message_input_screen(&model);
     lv_obj_set_event_cb(model.keyboard, on_keyboard_ok);
 
-    lv_scr_load(model.screen);
+    lv_scr_load(screen);
 }
 
 int main() {
@@ -104,8 +107,8 @@ int main() {
     splash.delay = 3000;
     splash.callback = switch_to_main;
 
-    waka_splash_screen(&splash, lv_scr_act());
-
+    screen = waka_splash_screen(&splash);
+    lv_scr_load(screen);
 
     while(1) {
         lv_task_handler();

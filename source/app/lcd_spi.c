@@ -5,27 +5,31 @@
  *      Author: Andrii
  */
 
+#include <waka_conf.h>
+
+#ifdef LCD_LPSPI
+
 #include "fsl_gpio.h"
 #include "fsl_edma.h"
-#include "fsl_lpspi.h"
-#include "fsl_lpspi_edma.h"
-
 #include "peripherals.h"
-
-
-#define GPIO_PIN_RESET	1
-#define GPIO_PIN_CDX	2
-
-
-lpspi_master_edma_handle_t g_m_edma_handle;
-edma_handle_t lpspiEdmaMasterRxRegToRxDataHandle;
-edma_handle_t lpspiEdmaMasterTxDataToTxRegHandle;
 
 volatile bool in_progress = false;
 
 const gpio_pin_config_t dcx_config = {
 		.direction = kGPIO_DigitalOutput
 };
+
+#define GPIO_PIN_RESET	1
+#define GPIO_PIN_CDX	2
+
+
+
+#include "fsl_lpspi.h"
+#include "fsl_lpspi_edma.h"
+
+lpspi_master_edma_handle_t g_m_edma_handle;
+edma_handle_t lpspiEdmaMasterRxRegToRxDataHandle;
+edma_handle_t lpspiEdmaMasterTxDataToTxRegHandle;
 
 void LPSPI_MasterUserCallback(LPSPI_Type *base, lpspi_master_edma_handle_t *handle, status_t status, void *userData)
 {
@@ -127,3 +131,5 @@ void write_reset(uint8_t val)
 {
 	GPIO_PinWrite(GPIO1, GPIO_PIN_RESET, val);
 }
+
+#endif

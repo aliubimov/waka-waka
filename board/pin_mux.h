@@ -67,10 +67,30 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_I2C1_SCL_SIGNAL                                gpiomux_io   /*!< GPIO1 signal: gpiomux_io */
 #define BOARD_INITPINS_I2C1_SCL_CHANNEL                                       2U   /*!< GPIO1 gpiomux_io channel: 02 */
 
+/* GPIO_10 (number 2), UART1_TXD */
+#define BOARD_INITPINS_UART1_TXD_PERIPHERAL                              FLEXIO1   /*!< Device name: FLEXIO1 */
+#define BOARD_INITPINS_UART1_TXD_SIGNAL                                       IO   /*!< FLEXIO1 signal: IO */
+#define BOARD_INITPINS_UART1_TXD_CHANNEL                                      2U   /*!< FLEXIO1 IO channel: 02 */
+
+/* GPIO_09 (number 3), UART1_RXD */
+#define BOARD_INITPINS_UART1_RXD_PERIPHERAL                              FLEXIO1   /*!< Device name: FLEXIO1 */
+#define BOARD_INITPINS_UART1_RXD_SIGNAL                                       IO   /*!< FLEXIO1 signal: IO */
+#define BOARD_INITPINS_UART1_RXD_CHANNEL                                      1U   /*!< FLEXIO1 IO channel: 01 */
+
+/* GPIO_AD_10 (number 47), ADC12_5/JTAG_TDI/J55[8]/J26[6] */
+#define BOARD_INITPINS_ADC12_5_PERIPHERAL                                FLEXIO1   /*!< Device name: FLEXIO1 */
+#define BOARD_INITPINS_ADC12_5_SIGNAL                                         IO   /*!< FLEXIO1 signal: IO */
+#define BOARD_INITPINS_ADC12_5_CHANNEL                                       22U   /*!< FLEXIO1 IO channel: 22 */
+
+/* GPIO_AD_09 (number 48), ADC12_4/JTAG_TDO/J55[6]/J26[4] */
+#define BOARD_INITPINS_ADC12_4_PERIPHERAL                                FLEXIO1   /*!< Device name: FLEXIO1 */
+#define BOARD_INITPINS_ADC12_4_SIGNAL                                         IO   /*!< FLEXIO1 signal: IO */
+#define BOARD_INITPINS_ADC12_4_CHANNEL                                       21U   /*!< FLEXIO1 IO channel: 21 */
+
 /* GPIO_AD_14 (number 43), ADC12_6/J26[8] */
-#define BOARD_INITPINS_ADC12_6_PERIPHERAL                                  GPIO1   /*!< Device name: GPIO1 */
-#define BOARD_INITPINS_ADC12_6_SIGNAL                                 gpiomux_io   /*!< GPIO1 signal: gpiomux_io */
-#define BOARD_INITPINS_ADC12_6_CHANNEL                                       28U   /*!< GPIO1 gpiomux_io channel: 28 */
+#define BOARD_INITPINS_ADC12_6_PERIPHERAL                                FLEXIO1   /*!< Device name: FLEXIO1 */
+#define BOARD_INITPINS_ADC12_6_SIGNAL                                         IO   /*!< FLEXIO1 signal: IO */
+#define BOARD_INITPINS_ADC12_6_CHANNEL                                       26U   /*!< FLEXIO1 IO channel: 26 */
 
 
 /*!
@@ -78,14 +98,6 @@ void BOARD_InitBootPins(void);
  *
  */
 void BOARD_InitPins(void);
-
-/* GPIO_09 (number 3), UART1_RXD */
-#define BOARD_INITDEBUG_UARTPINS_UART1_RXD_PERIPHERAL                    LPUART1   /*!< Device name: LPUART1 */
-#define BOARD_INITDEBUG_UARTPINS_UART1_RXD_SIGNAL                            RXD   /*!< LPUART1 signal: RXD */
-
-/* GPIO_10 (number 2), UART1_TXD */
-#define BOARD_INITDEBUG_UARTPINS_UART1_TXD_PERIPHERAL                    LPUART1   /*!< Device name: LPUART1 */
-#define BOARD_INITDEBUG_UARTPINS_UART1_TXD_SIGNAL                            TXD   /*!< LPUART1 signal: TXD */
 
 
 /*!

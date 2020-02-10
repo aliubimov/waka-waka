@@ -26,7 +26,6 @@ pin_labels:
 
 #include "fsl_common.h"
 #include "fsl_iomuxc.h"
-#include "fsl_gpio.h"
 #include "pin_mux.h"
 
 /* FUNCTION ************************************************************************************************************
@@ -52,7 +51,11 @@ BOARD_InitPins:
   - {pin_num: '58', peripheral: LPSPI1, signal: PCS1, pin_signal: GPIO_AD_02}
   - {pin_num: '12', peripheral: GPIO1, signal: 'gpiomux_io, 01', pin_signal: GPIO_01}
   - {pin_num: '11', peripheral: GPIO1, signal: 'gpiomux_io, 02', pin_signal: GPIO_02}
-  - {pin_num: '43', peripheral: GPIO1, signal: 'gpiomux_io, 28', pin_signal: GPIO_AD_14, direction: INPUT, open_drain: Disable, pull_up_down_config: Pull_Up_100K_Ohm}
+  - {pin_num: '2', peripheral: FLEXIO1, signal: 'IO, 02', pin_signal: GPIO_10}
+  - {pin_num: '3', peripheral: FLEXIO1, signal: 'IO, 01', pin_signal: GPIO_09}
+  - {pin_num: '47', peripheral: FLEXIO1, signal: 'IO, 22', pin_signal: GPIO_AD_10, pull_keeper_select: Keeper, pull_up_down_config: Pull_Down_100K_Ohm}
+  - {pin_num: '48', peripheral: FLEXIO1, signal: 'IO, 21', pin_signal: GPIO_AD_09, slew_rate: Slow, drive_strength: R0_4, pull_up_down_config: Pull_Down_100K_Ohm}
+  - {pin_num: '43', peripheral: FLEXIO1, signal: 'IO, 26', pin_signal: GPIO_AD_14}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 
@@ -65,20 +68,17 @@ BOARD_InitPins:
 void BOARD_InitPins(void) {
   CLOCK_EnableClock(kCLOCK_Iomuxc);           /* iomuxc clock (iomuxc_clk_enable): 0x03U */
 
-  /* GPIO configuration of ADC12_6 on GPIO_AD_14 (pin 43) */
-  gpio_pin_config_t ADC12_6_config = {
-      .direction = kGPIO_DigitalInput,
-      .outputLogic = 0U,
-      .interruptMode = kGPIO_NoIntmode
-  };
-  /* Initialize GPIO functionality on GPIO_AD_14 (pin 43) */
-  GPIO_PinInit(GPIO1, 28U, &ADC12_6_config);
-
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_01_GPIOMUX_IO01,            /* GPIO_01 is configured as GPIOMUX_IO01 */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_02_GPIOMUX_IO02,            /* GPIO_02 is configured as GPIOMUX_IO02 */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_09_FLEXIO1_IO01,            /* GPIO_09 is configured as FLEXIO1_IO01 */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_10_FLEXIO1_IO02,            /* GPIO_10 is configured as FLEXIO1_IO02 */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_02_LPSPI1_PCS1,          /* GPIO_AD_02 is configured as LPSPI1_PCS1 */
@@ -96,17 +96,33 @@ void BOARD_InitPins(void) {
       IOMUXC_GPIO_AD_06_LPSPI1_SCK,           /* GPIO_AD_06 is configured as LPSPI1_SCK */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
-      IOMUXC_GPIO_AD_14_GPIOMUX_IO28,         /* GPIO_AD_14 is configured as GPIOMUX_IO28 */
+      IOMUXC_GPIO_AD_09_FLEXIO1_IO21,         /* GPIO_AD_09 is configured as FLEXIO1_IO21 */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_AD_10_FLEXIO1_IO22,         /* GPIO_AD_10 is configured as FLEXIO1_IO22 */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_AD_14_FLEXIO1_IO26,         /* GPIO_AD_14 is configured as FLEXIO1_IO26 */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinConfig(
-      IOMUXC_GPIO_AD_14_GPIOMUX_IO28,         /* GPIO_AD_14 PAD functional properties : */
-      0x90A0U);                               /* Slew Rate Field: Slow Slew Rate
+      IOMUXC_GPIO_AD_09_FLEXIO1_IO21,         /* GPIO_AD_09 PAD functional properties : */
+      0x10A0U);                               /* Slew Rate Field: Slow Slew Rate
                                                  Drive Strength Field: R0/4
                                                  Speed Field: fast(150MHz)
                                                  Open Drain Enable Field: Open Drain Disabled
                                                  Pull / Keep Enable Field: Pull/Keeper Enabled
                                                  Pull / Keep Select Field: Keeper
-                                                 Pull Up / Down Config. Field: 100K Ohm Pull Up
+                                                 Pull Up / Down Config. Field: 100K Ohm Pull Down
+                                                 Hyst. Enable Field: Hysteresis Disabled */
+  IOMUXC_SetPinConfig(
+      IOMUXC_GPIO_AD_10_FLEXIO1_IO22,         /* GPIO_AD_10 PAD functional properties : */
+      0x10A0U);                               /* Slew Rate Field: Slow Slew Rate
+                                                 Drive Strength Field: R0/4
+                                                 Speed Field: fast(150MHz)
+                                                 Open Drain Enable Field: Open Drain Disabled
+                                                 Pull / Keep Enable Field: Pull/Keeper Enabled
+                                                 Pull / Keep Select Field: Keeper
+                                                 Pull Up / Down Config. Field: 100K Ohm Pull Down
                                                  Hyst. Enable Field: Hysteresis Disabled */
 }
 
@@ -115,9 +131,7 @@ void BOARD_InitPins(void) {
  * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 BOARD_InitDEBUG_UARTPins:
 - options: {callFromInitBoot: 'true', coreID: core0, enableClock: 'true'}
-- pin_list:
-  - {pin_num: '3', peripheral: LPUART1, signal: RXD, pin_signal: GPIO_09}
-  - {pin_num: '2', peripheral: LPUART1, signal: TXD, pin_signal: GPIO_10}
+- pin_list: []
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 
@@ -128,14 +142,6 @@ BOARD_InitDEBUG_UARTPins:
  *
  * END ****************************************************************************************************************/
 void BOARD_InitDEBUG_UARTPins(void) {
-  CLOCK_EnableClock(kCLOCK_Iomuxc);           /* iomuxc clock (iomuxc_clk_enable): 0x03U */
-
-  IOMUXC_SetPinMux(
-      IOMUXC_GPIO_09_LPUART1_RXD,             /* GPIO_09 is configured as LPUART1_RXD */
-      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
-  IOMUXC_SetPinMux(
-      IOMUXC_GPIO_10_LPUART1_TXD,             /* GPIO_10 is configured as LPUART1_TXD */
-      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
 }
 
 

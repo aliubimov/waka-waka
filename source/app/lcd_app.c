@@ -231,6 +231,15 @@ void usleep(int ms) {
 	}
 }
 
+static void switch_to_main(lv_obj_t *screen)
+{
+	input_message_screen_t model;
+    create_message_input_screen(&model);
+//    lv_obj_set_event_cb(model.keyboard, on_keyboard_ok);
+
+    lv_scr_load(model.screen);
+}
+
 
 void app_run() {
 
@@ -261,8 +270,11 @@ void app_run() {
 //    create_message_input_screen(&model);
 //
 //    lv_scr_load(model.screen);
+    waka_splash_screen_t splash;
+    splash.delay = 3000;
+    splash.callback = switch_to_main;
 
-    waka_splash_screen(lv_scr_act());
+    waka_splash_screen(&splash, lv_scr_act());
 
     initialized = true;
 

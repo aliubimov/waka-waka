@@ -49,7 +49,7 @@
                         <data>true</data>
                      </feature>
                   </dependency>
-                  <dependency resourceType="Peripheral" resourceId="GPIO1" description="Peripheral GPIO1 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
+                  <dependency resourceType="Peripheral" resourceId="FLEXIO1" description="Peripheral FLEXIO1 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
                      <feature name="initialized" evaluation="equal">
                         <data>true</data>
                      </feature>
@@ -64,11 +64,6 @@
                         <data>true</data>
                      </feature>
                   </dependency>
-                  <dependency resourceType="SWComponent" resourceId="platform.drivers.igpio" description="Pins initialization requires the IGPIO Driver in the project." problem_level="2" source="Pins:BOARD_InitPins">
-                     <feature name="enabled" evaluation="equal" configuration="core0">
-                        <data>true</data>
-                     </feature>
-                  </dependency>
                </dependencies>
                <pins>
                   <pin peripheral="LPSPI1" signal="PCS0" pin_num="55" pin_signal="GPIO_AD_05"/>
@@ -78,13 +73,22 @@
                   <pin peripheral="LPSPI1" signal="PCS1" pin_num="58" pin_signal="GPIO_AD_02"/>
                   <pin peripheral="GPIO1" signal="gpiomux_io, 01" pin_num="12" pin_signal="GPIO_01"/>
                   <pin peripheral="GPIO1" signal="gpiomux_io, 02" pin_num="11" pin_signal="GPIO_02"/>
-                  <pin peripheral="GPIO1" signal="gpiomux_io, 28" pin_num="43" pin_signal="GPIO_AD_14">
+                  <pin peripheral="FLEXIO1" signal="IO, 02" pin_num="2" pin_signal="GPIO_10"/>
+                  <pin peripheral="FLEXIO1" signal="IO, 01" pin_num="3" pin_signal="GPIO_09"/>
+                  <pin peripheral="FLEXIO1" signal="IO, 22" pin_num="47" pin_signal="GPIO_AD_10">
                      <pin_features>
-                        <pin_feature name="direction" value="INPUT"/>
-                        <pin_feature name="open_drain" value="Disable"/>
-                        <pin_feature name="pull_up_down_config" value="Pull_Up_100K_Ohm"/>
+                        <pin_feature name="pull_keeper_select" value="Keeper"/>
+                        <pin_feature name="pull_up_down_config" value="Pull_Down_100K_Ohm"/>
                      </pin_features>
                   </pin>
+                  <pin peripheral="FLEXIO1" signal="IO, 21" pin_num="48" pin_signal="GPIO_AD_09">
+                     <pin_features>
+                        <pin_feature name="slew_rate" value="Slow"/>
+                        <pin_feature name="drive_strength" value="R0_4"/>
+                        <pin_feature name="pull_up_down_config" value="Pull_Down_100K_Ohm"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="FLEXIO1" signal="IO, 26" pin_num="43" pin_signal="GPIO_AD_14"/>
                </pins>
             </function>
             <function name="BOARD_InitDEBUG_UARTPins">
@@ -95,26 +99,13 @@
                   <enableClock>true</enableClock>
                </options>
                <dependencies>
-                  <dependency resourceType="Peripheral" resourceId="LPUART1" description="Peripheral LPUART1 is not initialized" problem_level="1" source="Pins:BOARD_InitDEBUG_UARTPins">
-                     <feature name="initialized" evaluation="equal">
-                        <data>true</data>
-                     </feature>
-                  </dependency>
                   <dependency resourceType="SWComponent" resourceId="platform.drivers.common" description="Pins initialization requires the COMMON Driver in the project." problem_level="2" source="Pins:BOARD_InitDEBUG_UARTPins">
                      <feature name="enabled" evaluation="equal" configuration="core0">
                         <data>true</data>
                      </feature>
                   </dependency>
-                  <dependency resourceType="SWComponent" resourceId="platform.drivers.iomuxc" description="Pins initialization requires the IOMUXC Driver in the project." problem_level="2" source="Pins:BOARD_InitDEBUG_UARTPins">
-                     <feature name="enabled" evaluation="equal" configuration="core0">
-                        <data>true</data>
-                     </feature>
-                  </dependency>
                </dependencies>
-               <pins>
-                  <pin peripheral="LPUART1" signal="RXD" pin_num="3" pin_signal="GPIO_09"/>
-                  <pin peripheral="LPUART1" signal="TXD" pin_num="2" pin_signal="GPIO_10"/>
-               </pins>
+               <pins/>
             </function>
             <function name="BOARD_InitQSPIPins">
                <description>Configures pin routing and optionally pin electrical features.</description>
@@ -225,7 +216,7 @@
                   <clock_output id="CLK_24M.outFreq" value="24 MHz" locked="false" accuracy=""/>
                   <clock_output id="CORE_CLK_ROOT.outFreq" value="500 MHz" locked="false" accuracy=""/>
                   <clock_output id="ENET_500M_REF_CLK.outFreq" value="500 MHz" locked="false" accuracy=""/>
-                  <clock_output id="FLEXIO1_CLK_ROOT.outFreq" value="30 MHz" locked="false" accuracy=""/>
+                  <clock_output id="FLEXIO1_CLK_ROOT.outFreq" value="120 MHz" locked="false" accuracy=""/>
                   <clock_output id="FLEXSPI_CLK_ROOT.outFreq" value="132 MHz" locked="false" accuracy=""/>
                   <clock_output id="GPT1_ipg_clk_highfreq.outFreq" value="62.5 MHz" locked="false" accuracy=""/>
                   <clock_output id="GPT2_ipg_clk_highfreq.outFreq" value="62.5 MHz" locked="false" accuracy=""/>
@@ -248,6 +239,8 @@
                <clock_settings>
                   <setting id="CCM.ADC_ACLK_PODF.scale" value="12" locked="true"/>
                   <setting id="CCM.AHB_PODF.scale" value="1" locked="true"/>
+                  <setting id="CCM.FLEXIO1_CLK_PODF.scale" value="1" locked="true"/>
+                  <setting id="CCM.FLEXIO1_CLK_PRED.scale" value="4" locked="true"/>
                   <setting id="CCM.FLEXSPI_PODF.scale" value="4" locked="true"/>
                   <setting id="CCM.IPG_PODF.scale" value="4" locked="false"/>
                   <setting id="CCM.LPSPI_PODF.scale" value="5" locked="true"/>
@@ -303,6 +296,16 @@
                   <data type="Version">2.2.0</data>
                </feature>
             </dependency>
+            <dependency resourceType="SWComponent" resourceId="platform.drivers.flexio_spi" description="FLEXIO SPI Driver not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
+               <feature name="enabled" evaluation="equal">
+                  <data type="Boolean">true</data>
+               </feature>
+            </dependency>
+            <dependency resourceType="SWComponent" resourceId="platform.drivers.flexio_spi" description="Unsupported version of the FLEXIO SPI Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. Project might not compile correctly." problem_level="1" source="Peripherals">
+               <feature name="version" evaluation="equivalent">
+                  <data type="Version">2.1.3</data>
+               </feature>
+            </dependency>
             <dependency resourceType="SWComponent" resourceId="platform.drivers.lpspi" description="LPSPI Driver not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
                <feature name="enabled" evaluation="equal">
                   <data type="Boolean">true</data>
@@ -344,6 +347,41 @@
                   <dependency resourceType="SWComponent" resourceId="platform.drivers.dmamux" description="The compatible version of the fsl_dmamux driver is not available in the project (required for the eDMA). Problem must be resolved in another tool." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
                      <feature name="version" evaluation="compatible">
                         <data type="Version">2.0.2</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.flexio" description="The fsl_flexio driver is missing in the project (required for the FlexIO SPI). Problem must be resolved in another tool." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="enabled" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.flexio" description="The compatible version of the fsl_flexio driver is not available in the project (required for the FlexIO SPI). Problem must be resolved in another tool." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="version" evaluation="compatible">
+                        <data type="Version">2.0.2</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="ClockOutput" resourceId="FLEXIO1_CLK_ROOT" description="FLEXIO1_CLK_ROOT is inactive. Problem must be resolved in another tool." problem_level="2" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="frequency" evaluation="greaterThan">
+                        <data type="Frequency" unit="Hz">0</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="FLEXIO1.flexio_d.01" description="Signal IO of the channel 1 of the peripheral FLEXIO1 is not routed. Problem must be resolved in another tool." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="FLEXIO1.flexio_d.02" description="Signal IO of the channel 2 of the peripheral FLEXIO1 is not routed. Problem must be resolved in another tool." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="FLEXIO1.flexio_d.21" description="Signal IO of the channel 21 of the peripheral FLEXIO1 is not routed. Problem must be resolved in another tool." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="FLEXIO1.flexio_d.22" description="Signal IO of the channel 22 of the peripheral FLEXIO1 is not routed. Problem must be resolved in another tool." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="equal">
+                        <data type="Boolean">true</data>
                      </feature>
                   </dependency>
                   <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPSPI1.lpspi_sck" description="Signal serial clock of the peripheral LPSPI1 is not routed. Problem must be resolved in another tool." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
@@ -512,6 +550,44 @@
                         </struct>
                      </config_set>
                   </instance>
+                  <instance name="FLEXIO1" uuid="ee7d0e00-2300-4e94-ad9a-249ee5b73a8e" type="flexio_spi" type_id="flexio_spi_d67d6584d62b130dba246fa5abb61949" mode="interrupt" peripheral="FLEXIO1" enabled="true" comment="" custom_name_enabled="false">
+                     <config_set name="fsl_flexio_spi">
+                        <setting name="spi_mode" value="kSPI_Master"/>
+                        <setting name="clockSource" value="FlexIoClock"/>
+                        <setting name="clockSourceFreq" value="BOARD_BootClockRUN"/>
+                        <struct name="peripheralConfig">
+                           <setting name="SDOPinIndex" value="1"/>
+                           <setting name="SDIPinIndex" value="2"/>
+                           <setting name="SCKPinIndex" value="21"/>
+                           <setting name="CSnPinIndex" value="22"/>
+                           <setting name="shifterIndex_0" value="0"/>
+                           <setting name="shifterIndex_1" value="2"/>
+                           <setting name="timerIndex_0" value="0"/>
+                           <setting name="timerIndex_1" value="1"/>
+                        </struct>
+                        <struct name="master_config">
+                           <setting name="enableMaster" value="true"/>
+                           <setting name="enableInDoze" value="true"/>
+                           <setting name="enableInDebug" value="true"/>
+                           <setting name="enableFastAccess" value="true"/>
+                           <setting name="baudRate_Bps" value="5000000"/>
+                           <setting name="phase" value="kFLEXIO_SPI_ClockPhaseFirstEdge"/>
+                           <setting name="dataMode" value="kFLEXIO_SPI_8BitMode"/>
+                        </struct>
+                        <struct name="interruptsCfg">
+                           <set name="interruptSources">
+                              <selected/>
+                           </set>
+                           <setting name="isInterruptEnabled" value="true"/>
+                           <struct name="interrupt">
+                              <setting name="IRQn" value="FLEXIO1_IRQn"/>
+                              <setting name="enable_priority" value="false"/>
+                              <setting name="priority" value="0"/>
+                              <setting name="enable_custom_name" value="false"/>
+                           </struct>
+                        </struct>
+                     </config_set>
+                  </instance>
                   <instance name="LPSPI1" uuid="90a7d8ef-fab8-4dff-bbfc-9460d33696b1" type="lpspi" type_id="lpspi_6e21a1e0a09f0a012d683c4f91752db8" mode="transfer" peripheral="LPSPI1" enabled="true" comment="" custom_name_enabled="false">
                      <config_set name="transfer">
                         <struct name="config">
@@ -571,7 +647,7 @@
                         <array name="channels">
                            <struct name="0">
                               <setting name="channel_id" value="CHANNEL_0"/>
-                              <setting name="channelNumber" value="0"/>
+                              <setting name="channelNumber" value="3"/>
                               <setting name="enableChain" value="false"/>
                               <setting name="timerPeriod" value="0.005s"/>
                               <setting name="startTimer" value="true"/>
@@ -587,7 +663,7 @@
             <component name="system" uuid="4a100408-9d44-4f77-a658-646454dbcdb7" type_id="system_54b53072540eeeb8f8e9343e71f28176">
                <config_set_global name="global_system_definitions"/>
             </component>
-            <component name="msg" uuid="6b35b931-0d83-4792-acc1-22df07028d61" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
+            <component name="msg" uuid="b6cb647d-9650-4cd6-8c59-addb6123b588" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
                <config_set_global name="global_messages"/>
             </component>
          </components>

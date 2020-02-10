@@ -12,6 +12,7 @@
 #include "fsl_edma.h"
 #include "fsl_dmamux.h"
 #include "fsl_common.h"
+#include "fsl_flexio_spi.h"
 #include "fsl_clock.h"
 #include "fsl_lpspi.h"
 #include "fsl_pit.h"
@@ -40,6 +41,14 @@ extern "C" {
 #define DMA0_CH1_DMA_REQUEST kDmaRequestMuxLPSPI1Rx
 /* Selected eDMA channel number. */
 #define DMA0_CH1_DMA_CHANNEL 1
+/* Definition of peripheral ID */
+#define FLEXIO1_PERIPHERAL FLEXIO1
+/* Definition of the clock source frequency */
+#define FLEXIO1_CLK_FREQ 120000000UL
+/* FLEXIO1 interrupt vector ID (number). */
+#define FLEXIO1_IRQN FLEXIO1_IRQn
+/* FLEXIO1 interrupt handler identifier. */
+#define FLEXIO1_IRQHANDLER FLEXIO1_IRQHandler
 /* BOARD_InitPeripherals defines for LPSPI1 */
 /* Definition of peripheral ID */
 #define LPSPI1_PERIPHERAL LPSPI1
@@ -52,15 +61,15 @@ extern "C" {
 #define PIT_PERIPHERAL PIT
 /* Definition of clock source frequency. */
 #define PIT_CLK_FREQ 62500000UL
-/* Definition of ticks count for channel 0 - deprecated. */
-#define PIT_0_TICKS 312499U
+/* Definition of ticks count for channel 3 - deprecated. */
+#define PIT_3_TICKS 312499U
 /* PIT interrupt vector ID (number) - deprecated. */
-#define PIT_0_IRQN PIT_IRQn
+#define PIT_3_IRQN PIT_IRQn
 /* PIT interrupt handler identifier - deprecated. */
-#define PIT_0_IRQHANDLER PIT0_IRQHandler
-/* Definition of channel number for channel 0. */
-#define PIT_CHANNEL_0 kPIT_Chnl_0
-/* Definition of ticks count for channel 0. */
+#define PIT_3_IRQHANDLER PIT3_IRQHandler
+/* Definition of channel number for channel 3. */
+#define PIT_CHANNEL_0 kPIT_Chnl_3
+/* Definition of ticks count for channel 3. */
 #define PIT_CHANNEL_0_TICKS 312499U
 /* PIT interrupt vector ID (number). */
 #define PIT_IRQN PIT_IRQn
@@ -71,6 +80,10 @@ extern "C" {
  * Global variables
  **********************************************************************************************************************/
 extern const edma_config_t DMA0_config;
+/* FlexIO peripheral configuration */
+extern FLEXIO_SPI_Type FLEXIO1_peripheralConfig;
+/* FlexIO SPI master configuration */
+extern flexio_spi_master_config_t FLEXIO1_config;
 extern const lpspi_master_config_t LPSPI1_config;
 extern lpspi_transfer_t LPSPI1_transfer;
 extern lpspi_master_handle_t LPSPI1_handle;

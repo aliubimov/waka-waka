@@ -196,6 +196,79 @@ void DMA0_init(void) {
 }
 
 /***********************************************************************************************************************
+ * FLEXIO1 initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'FLEXIO1'
+- type: 'flexio_spi'
+- mode: 'interrupt'
+- custom_name_enabled: 'false'
+- type_id: 'flexio_spi_d67d6584d62b130dba246fa5abb61949'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'FLEXIO1'
+- config_sets:
+  - fsl_flexio_spi:
+    - spi_mode: 'kSPI_Master'
+    - clockSource: 'FlexIoClock'
+    - clockSourceFreq: 'BOARD_BootClockRUN'
+    - peripheralConfig:
+      - SDOPinIndex: '1'
+      - SDIPinIndex: '2'
+      - SCKPinIndex: '21'
+      - CSnPinIndex: '22'
+      - shifterIndex_0: '0'
+      - shifterIndex_1: '2'
+      - timerIndex_0: '0'
+      - timerIndex_1: '1'
+    - master_config:
+      - enableMaster: 'true'
+      - enableInDoze: 'true'
+      - enableInDebug: 'true'
+      - enableFastAccess: 'true'
+      - baudRate_Bps: '5000000'
+      - phase: 'kFLEXIO_SPI_ClockPhaseFirstEdge'
+      - dataMode: 'kFLEXIO_SPI_8BitMode'
+    - interruptsCfg:
+      - interruptSources: ''
+      - isInterruptEnabled: 'true'
+      - interrupt:
+        - IRQn: 'FLEXIO1_IRQn'
+        - enable_priority: 'false'
+        - priority: '0'
+        - enable_custom_name: 'false'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+/* FlexIO access configuration */
+FLEXIO_SPI_Type FLEXIO1_peripheralConfig = {
+  .flexioBase = FLEXIO1_PERIPHERAL,
+  .SDOPinIndex = 1,
+  .SDIPinIndex = 2,
+  .SCKPinIndex = 21,
+  .CSnPinIndex = 22,
+  .shifterIndex = {0, 2},
+  .timerIndex = {0, 1}
+};
+/* SPI master configuration */
+flexio_spi_master_config_t FLEXIO1_config = {
+  .enableMaster = true,
+  .enableInDoze = true,
+  .enableInDebug = true,
+  .enableFastAccess = true,
+  .baudRate_Bps = 5000000,
+  .phase = kFLEXIO_SPI_ClockPhaseFirstEdge,
+  .dataMode = kFLEXIO_SPI_8BitMode
+};
+
+void FLEXIO1_init(void) {
+  /* Master initialization */
+  FLEXIO_SPI_MasterInit(&FLEXIO1_peripheralConfig, &FLEXIO1_config, FLEXIO1_CLK_FREQ);
+  /* Enable interrupt FLEXIO1_IRQn request in the NVIC */
+  EnableIRQ(FLEXIO1_IRQn);
+}
+
+/***********************************************************************************************************************
  * LPSPI1 initialization code
  **********************************************************************************************************************/
 /* clang-format off */
@@ -296,7 +369,7 @@ instance:
     - channels:
       - 0:
         - channel_id: 'CHANNEL_0'
-        - channelNumber: '0'
+        - channelNumber: '3'
         - enableChain: 'false'
         - timerPeriod: '0.005s'
         - startTimer: 'true'
@@ -310,13 +383,13 @@ const pit_config_t PIT_config = {
 void PIT_init(void) {
   /* Initialize the PIT. */
   PIT_Init(PIT_PERIPHERAL, &PIT_config);
-  /* Set channel 0 period to 5 ms (312500 ticks). */
+  /* Set channel 3 period to 5 ms (312500 ticks). */
   PIT_SetTimerPeriod(PIT_PERIPHERAL, PIT_CHANNEL_0, PIT_CHANNEL_0_TICKS);
-  /* Enable interrupts from channel 0. */
+  /* Enable interrupts from channel 3. */
   PIT_EnableInterrupts(PIT_PERIPHERAL, PIT_CHANNEL_0, kPIT_TimerInterruptEnable);
   /* Enable interrupt PIT_IRQN request in the NVIC */
   EnableIRQ(PIT_IRQN);
-  /* Start channel 0. */
+  /* Start channel 3. */
   PIT_StartTimer(PIT_PERIPHERAL, PIT_CHANNEL_0);
 }
 
@@ -331,6 +404,7 @@ void BOARD_InitPeripherals(void)
 
   /* Initialize components */
   DMA0_init();
+  FLEXIO1_init();
   LPSPI1_init();
   PIT_init();
 }

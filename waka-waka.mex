@@ -73,6 +73,7 @@
                   <pin peripheral="LPSPI1" signal="PCS1" pin_num="58" pin_signal="GPIO_AD_02"/>
                   <pin peripheral="GPIO1" signal="gpiomux_io, 01" pin_num="12" pin_signal="GPIO_01"/>
                   <pin peripheral="GPIO1" signal="gpiomux_io, 02" pin_num="11" pin_signal="GPIO_02"/>
+                  <pin peripheral="GPIO1" signal="gpiomux_io, 21" pin_num="51" pin_signal="GPIO_AD_07"/>
                   <pin peripheral="FLEXIO1" signal="IO, 02" pin_num="2" pin_signal="GPIO_10"/>
                   <pin peripheral="FLEXIO1" signal="IO, 01" pin_num="3" pin_signal="GPIO_09"/>
                   <pin peripheral="FLEXIO1" signal="IO, 22" pin_num="47" pin_signal="GPIO_AD_10">
@@ -81,6 +82,7 @@
                         <pin_feature name="pull_up_down_config" value="Pull_Down_100K_Ohm"/>
                      </pin_features>
                   </pin>
+                  <pin peripheral="FLEXIO1" signal="IO, 26" pin_num="43" pin_signal="GPIO_AD_14"/>
                   <pin peripheral="FLEXIO1" signal="IO, 21" pin_num="48" pin_signal="GPIO_AD_09">
                      <pin_features>
                         <pin_feature name="slew_rate" value="Slow"/>
@@ -88,7 +90,6 @@
                         <pin_feature name="pull_up_down_config" value="Pull_Down_100K_Ohm"/>
                      </pin_features>
                   </pin>
-                  <pin peripheral="FLEXIO1" signal="IO, 26" pin_num="43" pin_signal="GPIO_AD_14"/>
                </pins>
             </function>
             <function name="BOARD_InitDEBUG_UARTPins">

@@ -8,17 +8,34 @@ extern "C" {
 #endif
 
 typedef struct {
-    lv_obj_t *screen;
     lv_obj_t *input;
     lv_obj_t *keyboard;
 } input_message_screen_t;
 
-typedef struct {
-    lv_obj_t *screen;
+typedef struct _waka_splash_screen_t waka_splash_screen_t;
+
+/**
+ * @brief callback called on splash screen is about to unload
+ */
+typedef void (*splash_screen_done_cb_t)(waka_splash_screen_t *model);
+
+/**
+ * @brief main structure of splash screen
+ */
+typedef struct _waka_splash_screen_t {
     lv_obj_t *img;
     uint32_t delay;
-    void (*callback)(lv_obj_t *screen);
+    splash_screen_done_cb_t callback;
 } waka_splash_screen_t;
+
+typedef struct
+{
+	lv_obj_t* slider;
+	lv_obj_t* r_slider;
+	lv_obj_t* b_slider;
+} waka_tune_model_t;
+
+lv_obj_t* tune_lcd_screen();
 
 lv_obj_t* waka_splash_screen(waka_splash_screen_t *model);
 

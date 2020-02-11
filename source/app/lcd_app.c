@@ -20,7 +20,7 @@
 
 #include "waka.h"
 
-#define GPIO_PIN_TIRQ 	28
+#define GPIO_PIN_TIRQ 	21
 
 #define TOUCH_X_MIN		420U
 #define TOUCH_Y_MIN		320U
@@ -39,6 +39,7 @@ extern void init_dcx();
 extern volatile bool in_progress;
 
 static ili9341_handle_t handle;
+static lv_obj_t* screen;
 
 void lcd_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t *color_p)
 {
@@ -231,13 +232,15 @@ void usleep(int ms) {
 	}
 }
 
-static void switch_to_main(lv_obj_t *screen)
+static void switch_to_main(waka_splash_screen_t *r)
 {
+	lv_obj_del_async(screen);
+
 	input_message_screen_t model;
-    create_message_input_screen(&model);
+	screen = create_message_input_screen(&model);
 //    lv_obj_set_event_cb(model.keyboard, on_keyboard_ok);
 
-    lv_scr_load(model.screen);
+    lv_scr_load(screen);
 }
 
 
@@ -274,7 +277,8 @@ void app_run() {
     splash.delay = 3000;
     splash.callback = switch_to_main;
 
-    waka_splash_screen(&splash, lv_scr_act());
+    screen = waka_splash_screen(&splash);
+    lv_scr_load(screen);
 
     initialized = true;
 

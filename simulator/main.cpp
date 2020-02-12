@@ -72,7 +72,7 @@ static void on_keyboard_ok(lv_obj_t *kb, lv_event_t event)
     lv_kb_def_event_cb(kb, event);
 }
 
-static void switch_to_main(lv_obj_t *r)
+static void switch_to_main(waka_splash_screen_t *m)
 {
 
     lv_obj_del(screen);
@@ -107,7 +107,11 @@ int main() {
     splash.delay = 3000;
     splash.callback = switch_to_main;
 
-    screen = waka_splash_screen(&splash);
+    //screen = waka_splash_screen(&splash);
+    
+    waka_message_list_screen_t m;
+
+    screen = waka_message_list_screen(&m);
     lv_scr_load(screen);
 
     while(1) {

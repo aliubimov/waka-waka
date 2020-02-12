@@ -30,14 +30,22 @@ typedef struct _waka_splash_screen_t {
 
 typedef struct
 {
-	lv_obj_t* slider;
-	lv_obj_t* r_slider;
-	lv_obj_t* b_slider;
+    lv_obj_t* slider;
+    lv_obj_t* r_slider;
+    lv_obj_t* b_slider;
 } waka_tune_model_t;
 
-lv_obj_t* tune_lcd_screen();
+
+typedef struct
+{
+    lv_obj_t* page;
+    lv_obj_t* input;
+    lv_obj_t* send_button;
+} waka_message_list_screen_t;
 
 lv_obj_t* waka_splash_screen(waka_splash_screen_t *model);
+
+lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model);
 
 lv_obj_t* create_message_input_screen(input_message_screen_t *model);
 

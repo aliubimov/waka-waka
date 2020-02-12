@@ -49,6 +49,7 @@ lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model)
     lv_obj_t *root = lv_obj_create(NULL, NULL);
 
 
+    // create page
     model->page = lv_page_create(root, NULL);
     lv_obj_align(model->page, root, LV_ALIGN_IN_TOP_LEFT, OBJ_SPACING, OBJ_SPACING);
     lv_obj_set_width(model->page, lv_obj_get_width(lv_scr_act()) - (2 * OBJ_SPACING));
@@ -57,7 +58,7 @@ lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model)
     // input text 
     model->input = lv_ta_create(root, NULL);
     lv_ta_set_one_line(model->input, true);
-    lv_obj_align(model->input, root, LV_ALIGN_IN_BOTTOM_LEFT, OBJ_SPACING, -OBJ_SPACING); 
+    lv_ta_set_cursor_type(model->input, LV_CURSOR_NONE);
 
 
     // send button
@@ -65,9 +66,14 @@ lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model)
     lv_obj_t *send_lbl = lv_label_create(model->send_button, NULL);
     lv_label_set_static_text(send_lbl, s_send_button_tetx);
 
-    lv_obj_set_height(model->send_button, lv_obj_get_height(model->input));
-    lv_obj_align(model->send_button, model->input, LV_ALIGN_OUT_RIGHT_BOTTOM, OBJ_SPACING, 0);
     
+    // align objects 
+    lv_obj_set_width(model->input, lv_obj_get_width_fit(lv_scr_act()) - lv_obj_get_width(model->send_button) - 3 * OBJ_SPACING);
+    lv_obj_align(model->input, root, LV_ALIGN_IN_BOTTOM_LEFT, OBJ_SPACING, -OBJ_SPACING); 
+    lv_obj_set_height(model->send_button, lv_obj_get_height(model->input));
+
+    lv_obj_align(model->send_button, model->input, LV_ALIGN_OUT_RIGHT_BOTTOM, OBJ_SPACING, 0);
+    lv_obj_set_height(model->page, lv_obj_get_y(model->input) - OBJ_SPACING * 3);
 
     return root;
 }

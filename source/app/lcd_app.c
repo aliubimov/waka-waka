@@ -236,9 +236,16 @@ static void switch_to_main(waka_splash_screen_t *r)
 {
 	lv_obj_del_async(screen);
 
-	input_message_screen_t model;
-	screen = create_message_input_screen(&model);
-//    lv_obj_set_event_cb(model.keyboard, on_keyboard_ok);
+	waka_message_list_screen_t model;
+	model.message_size = 50;
+	model.messages = malloc(sizeof(waka_message_t) * model.message_size);
+	waka_message_t *m_ptr = model.messages;
+
+	for (int i = 0; i < model.message_size; ++i) {
+		m_ptr[i].text = "hello!";
+	};
+
+	screen = waka_message_list_screen(&model);
 
     lv_scr_load(screen);
 }

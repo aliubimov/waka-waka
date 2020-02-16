@@ -57,9 +57,8 @@ lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model)
 
     waka_message_t *p_message = model->messages;
     for (int i = 0; i < model->message_size; ++i) {
-        p_message->label = lv_label_create(model->page, NULL);
-        lv_label_set_static_text(p_message->label, p_message->text);
-
+        p_message[i].label = lv_label_create(model->page, NULL);
+        lv_label_set_static_text(p_message[i].label, p_message[i].text);
     }
 
 

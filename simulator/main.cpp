@@ -111,6 +111,14 @@ int main() {
     
     waka_message_list_screen_t m;
 
+    m.message_size = 50;
+    m.messages = (waka_message_t*) malloc(sizeof(waka_message_t) * m.message_size); 
+
+    waka_message_t *p = m.messages;
+    for (int i = 0; i < m.message_size; ++i) {
+        p->text = "Wonders happens";
+    }
+    
     screen = waka_message_list_screen(&m);
     lv_scr_load(screen);
 

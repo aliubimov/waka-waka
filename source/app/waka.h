@@ -36,11 +36,21 @@ typedef struct
 } waka_tune_model_t;
 
 
+typedef struct 
+{
+    lv_obj_t* label;
+    const char *text;
+    size_t text_size;
+} waka_message_t;
+
 typedef struct
 {
     lv_obj_t* page;
     lv_obj_t* input;
     lv_obj_t* send_button;
+    waka_message_t *messages;
+    size_t message_size;
+    
 } waka_message_list_screen_t;
 
 lv_obj_t* waka_splash_screen(waka_splash_screen_t *model);

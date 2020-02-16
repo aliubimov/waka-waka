@@ -51,8 +51,16 @@ lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model)
 
     // create page
     model->page = lv_page_create(root, NULL);
-    lv_obj_align(model->page, root, LV_ALIGN_IN_TOP_LEFT, OBJ_SPACING, OBJ_SPACING);
+    lv_page_set_scrl_layout(model->page, LV_LAYOUT_COL_L);
     lv_obj_set_width(model->page, lv_obj_get_width(lv_scr_act()) - (2 * OBJ_SPACING));
+
+
+    waka_message_t *p_message = model->messages;
+    for (int i = 0; i < model->message_size; ++i) {
+        p_message->label = lv_label_create(model->page, NULL);
+        lv_label_set_static_text(p_message->label, p_message->text);
+
+    }
 
 
     // input text 
@@ -68,6 +76,7 @@ lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model)
 
     
     // align objects 
+    lv_obj_align(model->page, root, LV_ALIGN_IN_TOP_LEFT, OBJ_SPACING, OBJ_SPACING);
     lv_obj_set_width(model->input, lv_obj_get_width_fit(lv_scr_act()) - lv_obj_get_width(model->send_button) - 3 * OBJ_SPACING);
     lv_obj_align(model->input, root, LV_ALIGN_IN_BOTTOM_LEFT, OBJ_SPACING, -OBJ_SPACING); 
     lv_obj_set_height(model->send_button, lv_obj_get_height(model->input));

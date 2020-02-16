@@ -43,6 +43,40 @@ lv_obj_t* create_message_input_screen(input_message_screen_t *model)
     return root;
 }
 
+
+static lv_style_t msg_in_style;
+
+static lv_obj_t* waka_message_create(waka_message_t *msg, lv_obj_t *parent)
+{
+    msg->label = lv_cont_create(parent, NULL);
+
+    lv_cont_set_fit(msg->label, LV_FIT_TIGHT);
+    lv_cont_set_layout(msg->label, LV_LAYOUT_GRID);
+    lv_cont_set_style(msg->label, LV_CONT_STYLE_MAIN, &lv_style_plain);
+
+    lv_obj_t *l_receive_from = lv_label_create(msg->label, NULL);
+    lv_label_set_static_text(l_receive_from, "#bbbb00 2012-03-01 13:44# #ff0000 LoGiN#");
+    lv_label_set_recolor(l_receive_from, true);
+
+    lv_obj_t *l_txt = lv_label_create(msg->label, NULL);
+    lv_label_set_static_text(l_txt, msg->text);
+
+
+    return msg->label; 
+}
+
+static void input_text_click_cb(lv_obj_t * obj, lv_event_t event) {
+    waka_message_list_screen_t *model = (waka_message_list_screen_t*) obj->user_data;
+
+    switch(event) {
+     case LV_EVENT_SHORT_CLICKED:
+         if (model->input_message_cb) 
+             model->input_message_cb();
+         break;
+    }
+
+}
+
 lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model)
 {
 
@@ -55,10 +89,10 @@ lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model)
     lv_obj_set_width(model->page, lv_obj_get_width(lv_scr_act()) - (2 * OBJ_SPACING));
 
 
+    // load messages
     waka_message_t *p_message = model->messages;
     for (int i = 0; i < model->message_size; ++i) {
-        p_message[i].label = lv_label_create(model->page, NULL);
-        lv_label_set_static_text(p_message[i].label, p_message[i].text);
+        waka_message_create(&p_message[i], model->page);
     }
 
 
@@ -66,6 +100,9 @@ lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model)
     model->input = lv_ta_create(root, NULL);
     lv_ta_set_one_line(model->input, true);
     lv_ta_set_cursor_type(model->input, LV_CURSOR_NONE);
+    lv_ta_set_text(model->input, model->msg_to_send);
+    lv_obj_set_user_data(model->input, model);
+    lv_obj_set_event_cb(model->input, input_text_click_cb);
 
 
     // send button

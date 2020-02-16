@@ -85,6 +85,18 @@ static void switch_to_main(waka_splash_screen_t *m)
     lv_scr_load(screen);
 }
 
+static void show_input_screen() 
+{
+    lv_obj_del(screen);
+
+    input_message_screen_t model;
+
+    screen = create_message_input_screen(&model);
+    lv_obj_set_event_cb(model.keyboard, on_keyboard_ok);
+
+    lv_scr_load(screen);
+}
+
 int main() {
 
     lv_init();
@@ -95,7 +107,7 @@ int main() {
     lv_task_create(memory_monitor, 3000, LV_TASK_PRIO_MID, NULL);
 
 
-    lv_theme_t *th = lv_theme_material_init(0, NULL);
+    lv_theme_t *th = lv_theme_material_init(0, &terminus);
     lv_theme_set_current(th);
 
     th->style.kb.bg->text.font = &lv_font_roboto_16;
@@ -111,12 +123,13 @@ int main() {
     
     waka_message_list_screen_t m;
 
-    m.message_size = 50;
+    m.message_size = 15;
     m.messages = (waka_message_t*) malloc(sizeof(waka_message_t) * m.message_size); 
+    m.msg_to_send = "Ready for big party ?";
+    m.input_message_cb = show_input_screen;
 
-    waka_message_t *p = m.messages;
     for (int i = 0; i < m.message_size; ++i) {
-        p->text = "Wonders happens";
+        m.messages[i].text = "Wonders happens";
     }
     
     screen = waka_message_list_screen(&m);

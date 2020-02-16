@@ -28,13 +28,6 @@ typedef struct _waka_splash_screen_t {
     splash_screen_done_cb_t callback;
 } waka_splash_screen_t;
 
-typedef struct
-{
-    lv_obj_t* slider;
-    lv_obj_t* r_slider;
-    lv_obj_t* b_slider;
-} waka_tune_model_t;
-
 
 typedef struct 
 {
@@ -43,6 +36,8 @@ typedef struct
     size_t text_size;
 } waka_message_t;
 
+typedef void (*input_message_cb_t)();
+
 typedef struct
 {
     lv_obj_t* page;
@@ -50,6 +45,8 @@ typedef struct
     lv_obj_t* send_button;
     waka_message_t *messages;
     size_t message_size;
+    char * msg_to_send;
+    input_message_cb_t input_message_cb;
     
 } waka_message_list_screen_t;
 

@@ -38,14 +38,20 @@ typedef struct
 
 typedef void (*input_message_cb_t)();
 
+typedef waka_message_t* (*get_message_index_cb_t)(int idx);
+
 typedef struct
 {
     lv_obj_t* page;
     lv_obj_t* input;
     lv_obj_t* send_button;
-    waka_message_t *messages;
     size_t message_size;
     char * msg_to_send;
+
+    int idx_first;
+    int idx_last;
+
+    get_message_index_cb_t get_message_index;
     input_message_cb_t input_message_cb;
     
 } waka_message_list_screen_t;

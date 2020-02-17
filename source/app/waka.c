@@ -1,4 +1,5 @@
 #include "waka.h"
+#include <stdio.h>
 
 LV_IMG_DECLARE(logo);
 
@@ -48,18 +49,24 @@ static lv_style_t msg_in_style;
 
 static lv_obj_t* waka_message_create(waka_message_t *msg, lv_obj_t *parent)
 {
+    // message container
     msg->label = lv_cont_create(parent, NULL);
 
     lv_cont_set_fit(msg->label, LV_FIT_TIGHT);
     lv_cont_set_layout(msg->label, LV_LAYOUT_GRID);
     lv_cont_set_style(msg->label, LV_CONT_STYLE_MAIN, &lv_style_plain);
+    lv_obj_set_parent_event(msg->label, true);
 
+    // receive time label 
     lv_obj_t *l_receive_from = lv_label_create(msg->label, NULL);
-    lv_label_set_static_text(l_receive_from, "#bbbb00 2012-03-01 13:44# #ff0000 LoGiN#");
+    lv_label_set_static_text(l_receive_from, "#eeaf00 2012-03-01 13:44# #ff0000 LoGiN#");
     lv_label_set_recolor(l_receive_from, true);
+    lv_obj_set_parent_event(l_receive_from, true);
 
+    // message text label
     lv_obj_t *l_txt = lv_label_create(msg->label, NULL);
     lv_label_set_static_text(l_txt, msg->text);
+    lv_obj_set_parent_event(l_txt, true);
 
 
     return msg->label; 
@@ -77,6 +84,44 @@ static void input_text_click_cb(lv_obj_t * obj, lv_event_t event) {
 
 }
 
+/**
+ * @brief loads messages to the lv_page from model->idx_first to model_idx->last
+ */
+static void input_page_reload_msg(waka_message_list_screen_t* model)
+{
+    for (int i = model->idx_first; i < model->idx_last; ++i) {
+        waka_message_create(model->get_message_index(i), model->page);
+    }
+}
+
+
+static void input_page_reload_cb(lv_obj_t * obj, lv_event_t event) {
+/*
+ *    waka_message_list_screen_t *model = (waka_message_list_screen_t*) obj->user_data;
+ *
+ *    switch(event) {
+ *     case LV_EVENT_LONG_PRESSED_REPEAT:
+ *         if (lv_page_on_edge(obj, LV_PAGE_EDGE_BOTTOM)) {
+ *            int new_last = (model->idx_last + 1) < model->message_size ? model->idx_last + 1 : model->message_size;
+ *            int new_first = model->idx_first + (new_last - model->idx_last);
+ *
+ *            model->idx_first = new_first;
+ *            model->idx_last = new_last;
+ *
+ *            printf("%d-%d\n", model->idx_first, model->idx_last);
+ *
+ *            lv_page_clean(obj);
+ *            input_page_reload_msg(model);
+ *
+ *         }
+ *         break;
+ *    }
+ */
+}
+
+
+
+
 lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model)
 {
 
@@ -87,14 +132,12 @@ lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model)
     model->page = lv_page_create(root, NULL);
     lv_page_set_scrl_layout(model->page, LV_LAYOUT_COL_L);
     lv_obj_set_width(model->page, lv_obj_get_width(lv_scr_act()) - (2 * OBJ_SPACING));
+    lv_obj_set_user_data(model->page, model);
+    lv_obj_set_event_cb(model->page, input_page_reload_cb);
 
 
     // load messages
-    waka_message_t *p_message = model->messages;
-    for (int i = 0; i < model->message_size; ++i) {
-        waka_message_create(&p_message[i], model->page);
-    }
-
+    input_page_reload_msg(model);
 
     // input text 
     model->input = lv_ta_create(root, NULL);

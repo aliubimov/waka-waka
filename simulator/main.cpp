@@ -97,6 +97,15 @@ static void show_input_screen()
     lv_scr_load(screen);
 }
 
+
+waka_message_t msg[150];
+
+
+static waka_message_t* get_message_index(int idx) 
+{
+    return &msg[idx];
+}
+
 int main() {
 
     lv_init();
@@ -123,13 +132,17 @@ int main() {
     
     waka_message_list_screen_t m;
 
-    m.message_size = 15;
-    m.messages = (waka_message_t*) malloc(sizeof(waka_message_t) * m.message_size); 
+    m.idx_first = 0;
+    m.idx_last = 15;
+
+    m.message_size = 150;
+
     m.msg_to_send = "Ready for big party ?";
     m.input_message_cb = show_input_screen;
+    m.get_message_index = get_message_index;
 
     for (int i = 0; i < m.message_size; ++i) {
-        m.messages[i].text = "Wonders happens";
+        msg[i].text = "Wonders happen";
     }
     
     screen = waka_message_list_screen(&m);

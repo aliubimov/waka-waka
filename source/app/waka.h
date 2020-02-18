@@ -28,7 +28,7 @@ typedef struct _waka_message_list_screen
     lv_obj_t* input;
     lv_obj_t* send_button;
     size_t message_size;
-    char * msg_to_send;
+    const char * msg_to_send;
 
     int idx_first;
     int idx_last;
@@ -42,9 +42,9 @@ typedef struct _waka_message_list_screen
 
 lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model);
 
-waka_message_list_screen_t* waka_init_message_list_screen_model(active_model_t *model);
+waka_message_list_screen_t* waka_msg_list_screen_init(active_model_t *model);
 
-void waka_deinit_message_list_screen_model(active_model_t *model);
+void waka_msg_list_screen_destory(active_model_t *model);
 
 
 #if defined(__cplusplus)

@@ -128,13 +128,13 @@ lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model)
     return root;
 }
 
-waka_message_list_screen_t* waka_init_message_list_screen_model(active_model_t *model)
+waka_message_list_screen_t* waka_msg_list_screen_init(active_model_t *model)
 {
     model->list_messages_model = (waka_message_list_screen_t*) malloc(sizeof(waka_message_list_screen_t));
     return model->list_messages_model;
 }
 
-void waka_deinit_message_list_screen_model(active_model_t *model)
+void waka_msg_list_screen_destory(active_model_t *model)
 {
     free(model->list_messages_model);
 }

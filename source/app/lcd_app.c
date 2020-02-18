@@ -277,7 +277,7 @@ void app_run() {
 
 
 //    input_message_screen_t model;
-//    waka_create_message_input_screen(&model);
+//    waka_message_input_screen_screate(&model);
 //
 //    lv_scr_load(model.screen);
     waka_splash_screen_t splash;

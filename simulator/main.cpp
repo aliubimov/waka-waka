@@ -69,14 +69,26 @@ static void switch_to_main(waka_splash_screen_t *m)
     lv_obj_del(screen);
 }
 
+static void on_user_input(input_message_screen_t *model) {
+
+    printf("%s\n", lv_ta_get_text(model->input));
+}
+
+static void lv_task_show_input_screen(lv_task_t *task)
+{
+
+
+}
+
 static void show_input_screen() 
 {
-    lv_obj_del(screen);
+    lv_obj_del_async(screen);
+    waka_msg_input_screen_init(&model);
 
-    waka_deinit_message_list_screen_model(&model);
+    input_message_screen_t *screen_model = waka_msg_input_screen_init(&model);
+    screen_model->on_screen_apply = on_user_input;
 
-    waka_init_message_input_screen_model(&model);
-    screen = waka_create_message_input_screen(model.create_message_model);
+    screen = waka_msg_input_screen_create(screen_model);
 
     lv_scr_load(screen);
 }
@@ -114,7 +126,7 @@ int main() {
 
     //screen = waka_splash_screen(&splash);
     
-    waka_message_list_screen_t *m = waka_init_message_list_screen_model(&model);
+    waka_message_list_screen_t *m = waka_msg_list_screen_init(&model);
 
     m->idx_first = 0;
     m->idx_last = 15;

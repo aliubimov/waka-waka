@@ -11,6 +11,7 @@
 #include "lv_drivers/indev/mouse.h"
 
 #include "../source/app/waka.h"
+#include "../source/app/waka_input_msg.h"
 
 static lv_disp_buf_t disp_buf1;
 static lv_color_t buf1_1[320*10];
@@ -60,39 +61,22 @@ static void memory_monitor(lv_task_t * param)
 
 
 static lv_obj_t *screen;
-
-static void on_keyboard_ok(lv_obj_t *kb, lv_event_t event)
-{
-
-    if (event == LV_EVENT_APPLY) 
-    {
-        return;
-    }
-
-    lv_kb_def_event_cb(kb, event);
-}
+static active_model_t model;
 
 static void switch_to_main(waka_splash_screen_t *m)
 {
 
     lv_obj_del(screen);
-
-    input_message_screen_t model;
-
-    screen = create_message_input_screen(&model);
-    lv_obj_set_event_cb(model.keyboard, on_keyboard_ok);
-
-    lv_scr_load(screen);
 }
 
 static void show_input_screen() 
 {
     lv_obj_del(screen);
 
-    input_message_screen_t model;
+    waka_deinit_message_list_screen_model(&model);
 
-    screen = create_message_input_screen(&model);
-    lv_obj_set_event_cb(model.keyboard, on_keyboard_ok);
+    waka_init_message_input_screen_model(&model);
+    screen = waka_create_message_input_screen(model.create_message_model);
 
     lv_scr_load(screen);
 }
@@ -130,22 +114,22 @@ int main() {
 
     //screen = waka_splash_screen(&splash);
     
-    waka_message_list_screen_t m;
+    waka_message_list_screen_t *m = waka_init_message_list_screen_model(&model);
 
-    m.idx_first = 0;
-    m.idx_last = 15;
+    m->idx_first = 0;
+    m->idx_last = 15;
 
-    m.message_size = 150;
+    m->message_size = 150;
 
-    m.msg_to_send = "Ready for big party ?";
-    m.input_message_cb = show_input_screen;
-    m.get_message_index = get_message_index;
+    m->msg_to_send = "Ready for big party ?";
+    m->input_message_cb = show_input_screen;
+    m->get_message_index = get_message_index;
 
-    for (int i = 0; i < m.message_size; ++i) {
+    for (int i = 0; i < m->message_size; ++i) {
         msg[i].text = "Wonders happen";
     }
     
-    screen = waka_message_list_screen(&m);
+    screen = waka_message_list_screen(m);
     lv_scr_load(screen);
 
     while(1) {

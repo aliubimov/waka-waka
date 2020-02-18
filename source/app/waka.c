@@ -1,49 +1,13 @@
 #include "waka.h"
-#include <stdio.h>
 
-LV_IMG_DECLARE(logo);
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "../utils.h"
 
 #define OBJ_SPACING 5
 
 static const char *s_send_button_tetx  = "Send";
-
-static void splash_screen_unload_cb(lv_task_t *self)
-{
-    waka_splash_screen_t *model = (waka_splash_screen_t*) self->user_data;
-    model->callback(model);
-}
-
-lv_obj_t* waka_splash_screen(waka_splash_screen_t *model)
-{
-    lv_obj_t* root =  lv_obj_create(NULL, NULL);
-    lv_obj_set_style(root, lv_scr_act()->style_p);
-
-    model->img = lv_img_create(root, NULL);
-    lv_img_set_src(model->img, &logo);
-
-    // clear splash screen after delay
-    lv_task_t *clear_task = lv_task_create(splash_screen_unload_cb, model->delay, LV_TASK_PRIO_LOWEST, model);
-    lv_task_once(clear_task);
-
-    return root;
-}
-
-lv_obj_t* create_message_input_screen(input_message_screen_t *model)
-{
-
-    lv_obj_t *root = lv_obj_create(NULL, NULL);
-    model->input = lv_ta_create(root, NULL);
-    model->keyboard = lv_kb_create(root, NULL);
-
-    lv_obj_set_width(model->input, lv_obj_get_width(lv_scr_act()));
-
-    lv_ta_set_text(model->input, "");
-    lv_ta_set_placeholder_text(model->input, "Message...");
-    lv_kb_set_ta(model->keyboard, model->input);
-
-    return root;
-}
-
 
 static lv_style_t msg_in_style;
 
@@ -120,8 +84,6 @@ static void input_page_reload_cb(lv_obj_t * obj, lv_event_t event) {
 }
 
 
-
-
 lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model)
 {
 
@@ -166,3 +128,13 @@ lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model)
     return root;
 }
 
+waka_message_list_screen_t* waka_init_message_list_screen_model(active_model_t *model)
+{
+    model->list_messages_model = (waka_message_list_screen_t*) malloc(sizeof(waka_message_list_screen_t));
+    return model->list_messages_model;
+}
+
+void waka_deinit_message_list_screen_model(active_model_t *model)
+{
+    free(model->list_messages_model);
+}

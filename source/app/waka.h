@@ -2,34 +2,16 @@
 #define WAKA_INCLUDE_H
 
 #include "../../middleware/lvgl/lvgl.h"
+#include "waka_model.h"
+#include "waka_splash.h"
+#include "waka_input_msg.h"
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-typedef struct {
-    lv_obj_t *input;
-    lv_obj_t *keyboard;
-} input_message_screen_t;
 
-typedef struct _waka_splash_screen_t waka_splash_screen_t;
-
-/**
- * @brief callback called on splash screen is about to unload
- */
-typedef void (*splash_screen_done_cb_t)(waka_splash_screen_t *model);
-
-/**
- * @brief main structure of splash screen
- */
-typedef struct _waka_splash_screen_t {
-    lv_obj_t *img;
-    uint32_t delay;
-    splash_screen_done_cb_t callback;
-} waka_splash_screen_t;
-
-
-typedef struct 
+typedef struct
 {
     lv_obj_t* label;
     const char *text;
@@ -40,7 +22,7 @@ typedef void (*input_message_cb_t)();
 
 typedef waka_message_t* (*get_message_index_cb_t)(int idx);
 
-typedef struct
+typedef struct _waka_message_list_screen
 {
     lv_obj_t* page;
     lv_obj_t* input;
@@ -56,11 +38,14 @@ typedef struct
     
 } waka_message_list_screen_t;
 
-lv_obj_t* waka_splash_screen(waka_splash_screen_t *model);
+
 
 lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model);
 
-lv_obj_t* create_message_input_screen(input_message_screen_t *model);
+waka_message_list_screen_t* waka_init_message_list_screen_model(active_model_t *model);
+
+void waka_deinit_message_list_screen_model(active_model_t *model);
+
 
 #if defined(__cplusplus)
 }

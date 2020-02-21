@@ -19,6 +19,7 @@ set(USER_INTERFACE
     "../source/app/logo.c"
     "../source/app/waka_splash.c"
     "../source/app/waka_input_msg.c"
+    "../source/app/waka_settings.c"
     )
 
 add_executable(main main.cpp terminus.c ${USER_INTERFACE} ${SOURCES} ${INCLUDES})

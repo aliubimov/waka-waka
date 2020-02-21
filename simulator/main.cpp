@@ -12,6 +12,7 @@
 
 #include "../source/app/waka.h"
 #include "../source/app/waka_input_msg.h"
+#include "../source/app/waka_settings.h"
 
 static lv_disp_buf_t disp_buf1;
 static lv_color_t buf1_1[320*10];
@@ -112,12 +113,10 @@ int main() {
     lv_task_create(memory_monitor, 3000, LV_TASK_PRIO_MID, NULL);
 
 
-    lv_theme_t *th = lv_theme_material_init(0, &terminus);
+    lv_theme_t *th = lv_theme_material_init(0, NULL);
     lv_theme_set_current(th);
 
-    th->style.kb.bg->text.font = &lv_font_roboto_16;
-    th->style.kb.btn.rel->text.font = &lv_font_roboto_16;
-    th->style.kb.btn.pr->text.font = &lv_font_roboto_16;
+//    th->style.ta.area->text.font = &terminus;
 
 
     waka_splash_screen_t splash;
@@ -141,7 +140,8 @@ int main() {
         msg[i].text = "Wonders happen";
     }
     
-    screen = waka_message_list_screen(m);
+//    screen = waka_message_list_screen(m);
+    screen = waka_settings_create_screen();
     lv_scr_load(screen);
 
     while(1) {

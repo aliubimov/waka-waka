@@ -17,7 +17,7 @@ static lv_obj_t* waka_message_create(waka_message_t *msg, lv_obj_t *parent)
     msg->label = lv_cont_create(parent, NULL);
 
     lv_cont_set_fit(msg->label, LV_FIT_TIGHT);
-    lv_cont_set_layout(msg->label, LV_LAYOUT_GRID);
+    lv_cont_set_layout(msg->label, LV_LAYOUT_COL_L);
     lv_cont_set_style(msg->label, LV_CONT_STYLE_MAIN, &lv_style_plain);
     lv_obj_set_parent_event(msg->label, true);
 

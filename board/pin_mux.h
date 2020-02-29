@@ -57,15 +57,20 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_ADC12_2_PERIPHERAL                                 LPSPI1   /*!< Device name: LPSPI1 */
 #define BOARD_INITPINS_ADC12_2_SIGNAL                                       PCS1   /*!< LPSPI1 signal: PCS1 */
 
-/* GPIO_01 (number 12), I2C1_SDA/U10[18]/J57[18]/U26[6] */
-#define BOARD_INITPINS_I2C1_SDA_PERIPHERAL                                 GPIO1   /*!< Device name: GPIO1 */
-#define BOARD_INITPINS_I2C1_SDA_SIGNAL                                gpiomux_io   /*!< GPIO1 signal: gpiomux_io */
-#define BOARD_INITPINS_I2C1_SDA_CHANNEL                                       1U   /*!< GPIO1 gpiomux_io channel: 01 */
-
 /* GPIO_02 (number 11), I2C1_SCL/U10[17]/J57[20]/U26[4] */
 #define BOARD_INITPINS_I2C1_SCL_PERIPHERAL                                 GPIO1   /*!< Device name: GPIO1 */
 #define BOARD_INITPINS_I2C1_SCL_SIGNAL                                gpiomux_io   /*!< GPIO1 signal: gpiomux_io */
 #define BOARD_INITPINS_I2C1_SCL_CHANNEL                                       2U   /*!< GPIO1 gpiomux_io channel: 02 */
+
+/* GPIO_AD_07 (number 51), ADC12_3/J26[2] */
+#define BOARD_INITPINS_LCD_RESET_PERIPHERAL                                GPIO1   /*!< Device name: GPIO1 */
+#define BOARD_INITPINS_LCD_RESET_SIGNAL                               gpiomux_io   /*!< GPIO1 signal: gpiomux_io */
+#define BOARD_INITPINS_LCD_RESET_CHANNEL                                     21U   /*!< GPIO1 gpiomux_io channel: 21 */
+
+/* GPIO_AD_01 (number 59), ADC12_1/J26[10]/J56[14] */
+#define BOARD_INITPINS_LCD_CDX_PERIPHERAL                                  GPIO1   /*!< Device name: GPIO1 */
+#define BOARD_INITPINS_LCD_CDX_SIGNAL                                 gpiomux_io   /*!< GPIO1 signal: gpiomux_io */
+#define BOARD_INITPINS_LCD_CDX_CHANNEL                                       15U   /*!< GPIO1 gpiomux_io channel: 15 */
 
 /* GPIO_10 (number 2), UART1_TXD */
 #define BOARD_INITPINS_UART1_TXD_PERIPHERAL                              FLEXIO1   /*!< Device name: FLEXIO1 */
@@ -82,15 +87,15 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_ADC12_5_SIGNAL                                         IO   /*!< FLEXIO1 signal: IO */
 #define BOARD_INITPINS_ADC12_5_CHANNEL                                       22U   /*!< FLEXIO1 IO channel: 22 */
 
-/* GPIO_AD_09 (number 48), ADC12_4/JTAG_TDO/J55[6]/J26[4] */
-#define BOARD_INITPINS_ADC12_4_PERIPHERAL                                FLEXIO1   /*!< Device name: FLEXIO1 */
-#define BOARD_INITPINS_ADC12_4_SIGNAL                                         IO   /*!< FLEXIO1 signal: IO */
-#define BOARD_INITPINS_ADC12_4_CHANNEL                                       21U   /*!< FLEXIO1 IO channel: 21 */
-
 /* GPIO_AD_14 (number 43), ADC12_6/J26[8] */
 #define BOARD_INITPINS_ADC12_6_PERIPHERAL                                FLEXIO1   /*!< Device name: FLEXIO1 */
 #define BOARD_INITPINS_ADC12_6_SIGNAL                                         IO   /*!< FLEXIO1 signal: IO */
 #define BOARD_INITPINS_ADC12_6_CHANNEL                                       26U   /*!< FLEXIO1 IO channel: 26 */
+
+/* GPIO_AD_09 (number 48), ADC12_4/JTAG_TDO/J55[6]/J26[4] */
+#define BOARD_INITPINS_ADC12_4_PERIPHERAL                                FLEXIO1   /*!< Device name: FLEXIO1 */
+#define BOARD_INITPINS_ADC12_4_SIGNAL                                         IO   /*!< FLEXIO1 signal: IO */
+#define BOARD_INITPINS_ADC12_4_CHANNEL                                       21U   /*!< FLEXIO1 IO channel: 21 */
 
 
 /*!

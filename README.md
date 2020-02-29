@@ -23,34 +23,34 @@ GRND -> J60[14]
 LCD Pin Setup
 ---
 
-CS -> J57[6]
+VCC(5V) -> J60[10] (or any 5V stripe for shield)
 
-SCK -> J57[12]
+GRND -> J60[14] (or any ground stripe for shield)
 
-SDI(MOSI) -> J57[8]
+CS -> J26[6]
 
-SDO(MISO) -> J57[10]
+REST ->  J26[2]
 
-VCC(5V) -> J60[10]
+DCX -> J26[10]
+
+SDI(MOSI) -> J56[2]
+
+SCK -> J26[4]
 
 LED -> J60[8]
 
-DCX -> ~J26[12]~ J57[20]
-
-REST -> ~J26[10]~ J57[18]
-
-GRND -> J60[14]
+SDO(MISO) -> J57[4]
 
 
 Touch Pin Setup
 --- 
 
-CS -> J26[12]
+T_CS -> J57[16]
 
-SCK -> J57[12]
+T_SCK -> J57[12]
 
-SDI(MOSI) -> J57[8]
+T_DIN(MOSI) -> J57[8]
 
-SDO(MISO) -> J57[10]
+T_DO(MISO) -> J57[10]
 
-IRQ -> J26[8]
+T_IRQ -> J57[20] (via 1 kOhm resistor)

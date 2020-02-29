@@ -20,7 +20,7 @@
 
 #include "waka.h"
 
-#define GPIO_PIN_TIRQ 	21
+#define GPIO_PIN_TIRQ 	2
 
 #define TOUCH_X_MIN		420U
 #define TOUCH_Y_MIN		320U
@@ -232,17 +232,29 @@ void usleep(int ms) {
 	}
 }
 
+static waka_message_t msg[15];
+
+static waka_message_t* get_message_index(int idx)
+{
+    return &msg[idx];
+}
+
+
 static void switch_to_main(waka_splash_screen_t *r)
 {
 	lv_obj_del_async(screen);
 
-	waka_message_list_screen_t model;
-	model.message_size = 50;
-	model.messages = malloc(sizeof(waka_message_t) * model.message_size);
-	waka_message_t *m_ptr = model.messages;
+	// FIXME this is ugly
+	static waka_message_list_screen_t model;
+	model.msg_to_send = "hello :)";
+	model.message_size = 15;
+	model.idx_first = 0;
+	model.idx_last = 14;
+	model.get_message_index = get_message_index;
+	model.input_message_cb = NULL;
 
 	for (int i = 0; i < model.message_size; ++i) {
-		m_ptr[i].text = "hello!";
+		msg[i].text = "hello!";
 	};
 
 	screen = waka_message_list_screen(&model);

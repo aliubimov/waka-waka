@@ -33,6 +33,8 @@
                <pin_label pin_num="67" pin_signal="GPIO_SD_08" label="FlexSPI_D2_A" identifier="FlexSPI_D2_A"/>
                <pin_label pin_num="64" pin_signal="GPIO_SD_11" label="FlexSPI_D3_A" identifier="FlexSPI_D3_A"/>
                <pin_label pin_num="69" pin_signal="GPIO_SD_06" label="FlexSPI_SS0" identifier="FlexSPI_SS0"/>
+               <pin_label pin_num="59" pin_signal="GPIO_AD_01" label="ADC12_1/J26[10]/J56[14]" identifier="ADC12_1;LCD_CDX"/>
+               <pin_label pin_num="51" pin_signal="GPIO_AD_07" label="ADC12_3/J26[2]" identifier="ADC12_3;LCD_RESET"/>
             </pin_labels>
          </pins_profile>
          <functions_list>
@@ -71,9 +73,17 @@
                   <pin peripheral="LPSPI1" signal="SDI" pin_num="57" pin_signal="GPIO_AD_03"/>
                   <pin peripheral="LPSPI1" signal="SDO" pin_num="56" pin_signal="GPIO_AD_04"/>
                   <pin peripheral="LPSPI1" signal="PCS1" pin_num="58" pin_signal="GPIO_AD_02"/>
-                  <pin peripheral="GPIO1" signal="gpiomux_io, 01" pin_num="12" pin_signal="GPIO_01"/>
                   <pin peripheral="GPIO1" signal="gpiomux_io, 02" pin_num="11" pin_signal="GPIO_02"/>
-                  <pin peripheral="GPIO1" signal="gpiomux_io, 21" pin_num="51" pin_signal="GPIO_AD_07"/>
+                  <pin peripheral="GPIO1" signal="gpiomux_io, 21" pin_num="51" pin_signal="GPIO_AD_07">
+                     <pin_features>
+                        <pin_feature name="identifier" value="LCD_RESET"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="GPIO1" signal="gpiomux_io, 15" pin_num="59" pin_signal="GPIO_AD_01">
+                     <pin_features>
+                        <pin_feature name="identifier" value="LCD_CDX"/>
+                     </pin_features>
+                  </pin>
                   <pin peripheral="FLEXIO1" signal="IO, 02" pin_num="2" pin_signal="GPIO_10"/>
                   <pin peripheral="FLEXIO1" signal="IO, 01" pin_num="3" pin_signal="GPIO_09"/>
                   <pin peripheral="FLEXIO1" signal="IO, 22" pin_num="47" pin_signal="GPIO_AD_10">
@@ -664,7 +674,7 @@
             <component name="system" uuid="4a100408-9d44-4f77-a658-646454dbcdb7" type_id="system_54b53072540eeeb8f8e9343e71f28176">
                <config_set_global name="global_system_definitions"/>
             </component>
-            <component name="msg" uuid="b6cb647d-9650-4cd6-8c59-addb6123b588" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
+            <component name="msg" uuid="4dad67fa-bbc3-47f4-8760-42150858b9f8" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
                <config_set_global name="global_messages"/>
             </component>
          </components>

@@ -19,8 +19,8 @@ const gpio_pin_config_t dcx_config = {
 		.direction = kGPIO_DigitalOutput
 };
 
-#define GPIO_PIN_RESET	1
-#define GPIO_PIN_CDX	2
+#define GPIO_PIN_RESET	21
+#define GPIO_PIN_CDX	15
 
 #include "fsl_flexio_spi.h"
 

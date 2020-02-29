@@ -21,6 +21,8 @@ pin_labels:
 - {pin_num: '67', pin_signal: GPIO_SD_08, label: FlexSPI_D2_A, identifier: FlexSPI_D2_A}
 - {pin_num: '64', pin_signal: GPIO_SD_11, label: FlexSPI_D3_A, identifier: FlexSPI_D3_A}
 - {pin_num: '69', pin_signal: GPIO_SD_06, label: FlexSPI_SS0, identifier: FlexSPI_SS0}
+- {pin_num: '59', pin_signal: GPIO_AD_01, label: 'ADC12_1/J26[10]/J56[14]', identifier: ADC12_1;LCD_CDX}
+- {pin_num: '51', pin_signal: GPIO_AD_07, label: 'ADC12_3/J26[2]', identifier: ADC12_3;LCD_RESET}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 
@@ -49,13 +51,14 @@ BOARD_InitPins:
   - {pin_num: '57', peripheral: LPSPI1, signal: SDI, pin_signal: GPIO_AD_03}
   - {pin_num: '56', peripheral: LPSPI1, signal: SDO, pin_signal: GPIO_AD_04}
   - {pin_num: '58', peripheral: LPSPI1, signal: PCS1, pin_signal: GPIO_AD_02}
-  - {pin_num: '12', peripheral: GPIO1, signal: 'gpiomux_io, 01', pin_signal: GPIO_01}
   - {pin_num: '11', peripheral: GPIO1, signal: 'gpiomux_io, 02', pin_signal: GPIO_02}
+  - {pin_num: '51', peripheral: GPIO1, signal: 'gpiomux_io, 21', pin_signal: GPIO_AD_07, identifier: LCD_RESET}
+  - {pin_num: '59', peripheral: GPIO1, signal: 'gpiomux_io, 15', pin_signal: GPIO_AD_01, identifier: LCD_CDX}
   - {pin_num: '2', peripheral: FLEXIO1, signal: 'IO, 02', pin_signal: GPIO_10}
   - {pin_num: '3', peripheral: FLEXIO1, signal: 'IO, 01', pin_signal: GPIO_09}
   - {pin_num: '47', peripheral: FLEXIO1, signal: 'IO, 22', pin_signal: GPIO_AD_10, pull_keeper_select: Keeper, pull_up_down_config: Pull_Down_100K_Ohm}
-  - {pin_num: '48', peripheral: FLEXIO1, signal: 'IO, 21', pin_signal: GPIO_AD_09, slew_rate: Slow, drive_strength: R0_4, pull_up_down_config: Pull_Down_100K_Ohm}
   - {pin_num: '43', peripheral: FLEXIO1, signal: 'IO, 26', pin_signal: GPIO_AD_14}
+  - {pin_num: '48', peripheral: FLEXIO1, signal: 'IO, 21', pin_signal: GPIO_AD_09, slew_rate: Slow, drive_strength: R0_4, pull_up_down_config: Pull_Down_100K_Ohm}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 
@@ -69,9 +72,6 @@ void BOARD_InitPins(void) {
   CLOCK_EnableClock(kCLOCK_Iomuxc);           /* iomuxc clock (iomuxc_clk_enable): 0x03U */
 
   IOMUXC_SetPinMux(
-      IOMUXC_GPIO_01_GPIOMUX_IO01,            /* GPIO_01 is configured as GPIOMUX_IO01 */
-      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
-  IOMUXC_SetPinMux(
       IOMUXC_GPIO_02_GPIOMUX_IO02,            /* GPIO_02 is configured as GPIOMUX_IO02 */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
@@ -79,6 +79,9 @@ void BOARD_InitPins(void) {
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_10_FLEXIO1_IO02,            /* GPIO_10 is configured as FLEXIO1_IO02 */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_AD_01_GPIOMUX_IO15,         /* GPIO_AD_01 is configured as GPIOMUX_IO15 */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_02_LPSPI1_PCS1,          /* GPIO_AD_02 is configured as LPSPI1_PCS1 */
@@ -94,6 +97,9 @@ void BOARD_InitPins(void) {
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_06_LPSPI1_SCK,           /* GPIO_AD_06 is configured as LPSPI1_SCK */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_AD_07_GPIOMUX_IO21,         /* GPIO_AD_07 is configured as GPIOMUX_IO21 */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_09_FLEXIO1_IO21,         /* GPIO_AD_09 is configured as FLEXIO1_IO21 */

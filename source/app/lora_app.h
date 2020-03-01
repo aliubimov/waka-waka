@@ -6,13 +6,12 @@
  * This software may be modified and distributed under the terms
  * of the BSD license.  See the LICENSE file for details.
  */
-#ifndef LCD_APP_H_
-#define LCD_APP_H_
 
-#include "lv_conf.h"
+#ifndef LORA_APP_H_
+#define LORA_APP_H_
 
-void init_lcd();
+void init_radio();
 
-void app_run();
+uint8_t radio_read_reg(uint8_t reg);
 
-#endif /* LCD_APP_H_ */
+#endif /* LORA_APP_H_ */

@@ -1,4 +1,4 @@
-/* ili9341.c
+/* ili9341_drv.c
  *
  * Copyright (C) 2020 Andrii Liubimov
  * All rights reserved.

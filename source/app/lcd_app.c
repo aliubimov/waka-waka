@@ -1,13 +1,16 @@
-/*
- * lcd_app.c
+/* lora_app.c
  *
- *  Created on: Feb 1, 2020
- *      Author: Andrii
+ * Copyright (C) 2020 Andrii Liubimov
+ * All rights reserved.
+ *
+ * This software may be modified and distributed under the terms
+ * of the BSD license.  See the LICENSE file for details.
  */
-
 
 #include "lcd_app.h"
 #include "ili9341_drv.h"
+#include "lora_app.h"
+
 #include "fsl_gpio.h"
 #include "fsl_edma.h"
 #include "fsl_lpspi.h"
@@ -18,15 +21,9 @@
 
 #include "fsl_debug_console.h"
 
+#include "trouch_drv/touch_spi.h"
+
 #include "waka.h"
-
-#define GPIO_PIN_TIRQ 	2
-
-#define TOUCH_X_MIN		420U
-#define TOUCH_Y_MIN		320U
-#define TOUCH_X_MAX 	3800U
-#define TOUCH_Y_MAX		3800U
-
 
 extern void write_reg8(uint8_t cmd, uint8_t data);
 extern void write_data_dma(uint8_t *data, size_t size);
@@ -40,6 +37,8 @@ extern volatile bool in_progress;
 
 static ili9341_handle_t handle;
 static lv_obj_t* screen;
+
+static touch_reading_t touch;
 
 void lcd_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t *color_p)
 {
@@ -118,106 +117,18 @@ void PIT_IRQHANDLER(void) {
 	PIT_ClearStatusFlags(PIT, PIT_CHANNEL_0, kPIT_TimerFlag);
 }
 
-#define XPT2046_AVG		4
-
-static int16_t x, y;
-uint8_t avg_last;
-static int16_t avg_buf_x[XPT2046_AVG];
-static int16_t avg_buf_y[XPT2046_AVG];
-
-static void xpt2046_avg(int16_t * x, int16_t * y)
-{
-    /*Shift out the oldest data*/
-    uint8_t i;
-    for(i = XPT2046_AVG - 1; i > 0 ; i--) {
-        avg_buf_x[i] = avg_buf_x[i - 1];
-        avg_buf_y[i] = avg_buf_y[i - 1];
-    }
-
-    /*Insert the new point*/
-    avg_buf_x[0] = *x;
-    avg_buf_y[0] = *y;
-    if(avg_last < XPT2046_AVG) avg_last++;
-
-    /*Sum the x and y coordinates*/
-    int32_t x_sum = 0;
-    int32_t y_sum = 0;
-    for(i = 0; i < avg_last ; i++) {
-        x_sum += avg_buf_x[i];
-        y_sum += avg_buf_y[i];
-    }
-
-    /*Normalize the sums*/
-    (*x) = (int32_t)x_sum / avg_last;
-    (*y) = (int32_t)y_sum / avg_last;
-}
-
 bool touch_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data) {
+	touch_update_reading(&touch);
 
-	int state = ! GPIO_PinRead(GPIO1, GPIO_PIN_TIRQ);
-	data->state = state ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
+	data->state = touch.is_pressed ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
 
-	if (state) {
-		while (in_progress) {
-			__NOP();
-		};
-
-		LPSPI1_txBuffer[0] = 0b10010000;
-		LPSPI1_txBuffer[1] = 0x00;
-		LPSPI1_txBuffer[2] = 0b11010000;
-		LPSPI1_txBuffer[3] = 0x00;
-
-		LPSPI1_transfer.dataSize = 5;
-		LPSPI1_transfer.configFlags = kLPSPI_MasterPcsContinuous | kLPSPI_MasterPcs1;
-
-		while (LPSPI_GetStatusFlags(LPSPI1) & kLPSPI_ModuleBusyFlag) {};
-		assert (LPSPI_MasterTransferBlocking(LPSPI1, &LPSPI1_transfer) == kStatus_Success);
-
-		x = ((LPSPI1_rxBuffer[1] << 8) | LPSPI1_rxBuffer[2]) >> 3;
-		y = ((LPSPI1_rxBuffer[3] << 8) | LPSPI1_rxBuffer[4]) >> 3;
-
-		if (x > TOUCH_X_MIN)
-		{
-			x -= TOUCH_X_MIN;
-		} else {
-			x = 0;
-		}
-		if (y > TOUCH_Y_MIN)
-		{
-			y -= TOUCH_Y_MIN;
-		} else {
-			y = 0;
-		}
-
-		x = (x * 320) / (TOUCH_X_MAX - TOUCH_X_MIN);
-		y = (y * 240) / (TOUCH_Y_MAX - TOUCH_Y_MIN);
-
-		if (x > 320) {
-			x = 319;
-		}
-
-		if (y > 240) {
-			y = 239;
-		}
-
-		xpt2046_avg(&x, &y);
-	} else {
-		avg_last = 0;
-	}
-
-	data->point.x = x;
-	data->point.y = y;
+	data->point.x = touch.x;
+	data->point.y = touch.y;
 
 	return false;
 }
 
-void init_touch() {
-	gpio_pin_config_t touch_irq_config = {
-			.direction = kGPIO_DigitalInput
-	};
-
-	GPIO_PinInit(GPIO1, GPIO_PIN_TIRQ, &touch_irq_config);
-
+void register_touch() {
     lv_indev_drv_init(&indev_drv);
     indev_drv.type = LV_INDEV_TYPE_POINTER;
     indev_drv.read_cb = touch_read;
@@ -263,6 +174,10 @@ static void switch_to_main(waka_splash_screen_t *r)
 }
 
 
+void dump_radio_state(lv_task_t *self) {
+	PRINTF("radio status: %x\n", radio_read_reg(0x01));
+}
+
 void app_run() {
 
 	lv_init();
@@ -280,7 +195,7 @@ void app_run() {
 
     lv_disp_drv_register(&disp_drv);
 
-    init_touch();
+    register_touch();
 
     lv_theme_t *th = lv_theme_material_init(0, NULL);
     lv_theme_set_current(th);
@@ -298,6 +213,9 @@ void app_run() {
 
     screen = waka_splash_screen(&splash);
     lv_scr_load(screen);
+
+
+    lv_task_create(dump_radio_state, 1000, LV_TASK_PRIO_MID, NULL);
 
     initialized = true;
 

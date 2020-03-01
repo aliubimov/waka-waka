@@ -39,11 +39,11 @@
 #include "clock_config.h"
 #include "MIMXRT1011.h"
 #include "fsl_debug_console.h"
-/* TODO: insert other include files here. */
 #include "fsl_flexram.h"
 
-/* TODO: insert other definitions and declarations here. */
 #include "lcd_app.h"
+#include "lora_app.h"
+#include "app/trouch_drv/touch_spi.h"
 
 /*
  * @brief   Application entry point.
@@ -59,9 +59,9 @@ int main(void) {
 
     FLEXRAM_Init(FLEXRAM);
 
-    PRINTF("Hello World\n");
-
     init_lcd();
+    touch_init();
+    init_radio();
     app_run();
 
     while(1)

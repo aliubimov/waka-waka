@@ -1,7 +1,14 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
+WakaWaka
+===
 
-For now only LoRA or LCD could be used. 
+WakaWaka is wireless communation device designed for cases, where no GSM currier coverage available. It uses LoRA (Long Rnage Radio) for communication and therotically allows trasmitting messages on a distance in few miles. 
+
+Pinout for WakaWaka device
+===
+
+Following pin out share SPI port for RFM and Touch controller. LCD uses separate FlexSPI bus.
 
 RFM95 Pin setup
 ---

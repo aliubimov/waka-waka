@@ -7,10 +7,20 @@
  * of the BSD license.  See the LICENSE file for details.
  */
 
+#include "lora_app.h"
+
 #include "lora_drv/lora_drv.h"
 #include "drivers/fsl_lpspi.h"
 #include "drivers/fsl_lpspi_edma.h"
 #include "peripherals.h"
+
+#ifdef DEBUG
+#include "fsl_debug_console.h"
+#endif
+
+
+#define RFM_STATUS_REG		0x01
+
 
 extern volatile bool in_progress;
 
@@ -28,7 +38,10 @@ static lpspi_master_edma_handle_t g_m_edma_handle;
 static edma_handle_t lpspiEdmaMasterRxRegToRxDataHandle;
 static edma_handle_t lpspiEdmaMasterTxDataToTxRegHandle;
 
-static void lora_write_reg8(uint8_t reg, uint8_t data) {
+static volatile radio_receive_callback_t callback = NULL;
+
+static void lora_write_reg8(uint8_t reg, uint8_t data)
+{
 	while (in_progress) {
 		__WFI();
 	}
@@ -73,7 +86,8 @@ static uint8_t lora_read_reg8(uint8_t reg) {
     return LPSPI1_rxBuffer[1];
 }
 
-static void lora_init_spi() {
+static void lora_init_spi()
+{
     memset(&(lpspiEdmaMasterRxRegToRxDataHandle), 0, sizeof(lpspiEdmaMasterRxRegToRxDataHandle));
     memset(&(lpspiEdmaMasterTxDataToTxRegHandle), 0, sizeof(lpspiEdmaMasterTxDataToTxRegHandle));
 
@@ -83,13 +97,70 @@ static void lora_init_spi() {
 	// LPSPI_MasterTransferCreateHandleEDMA(LPSPI1, &g_m_edma_handle, LPSPI_MasterUserCallback, NULL, &lpspiEdmaMasterRxRegToRxDataHandle, &lpspiEdmaMasterTxDataToTxRegHandle);
 }
 
-void init_radio() {
+void init_radio()
+{
 	lora_init_spi();
-
 	lora_init(&lora_dev);
+
+#ifdef DEBUG
+	radio_status_t status = radio_read_status();
+
+	if (status == rsNotInitizlied) {
+		PRINTF("Radio initialization failed\n");
+	} else {
+		PRINTF("Radio initialized\n");
+	}
+#endif
 }
 
 
-uint8_t radio_read_reg(uint8_t reg) {
-	return lora_read_reg8(reg);
+radio_status_t radio_read_status()
+{
+	uint8_t status = lora_read_reg8(RFM_STATUS_REG);
+	if (status & 0x80) {
+		status &= 0x0f;
+
+		switch (status) {
+		  case 0x0:
+			return rsSleep;
+		  case 0x1:
+			return rsStandby;
+		  default:
+			return rsUnknown;
+		}
+	} else {
+		return rsNotInitizlied;
+	}
+}
+
+
+void register_receive_callback(radio_receive_callback_t func)
+{
+	callback = func;
+}
+
+
+void unregister_receive_callback()
+{
+	callback = NULL;
+}
+
+int get_last_packet_rssi()
+{
+	return lora_read_reg8(LORA_REG_RSSI) - 137;
+}
+
+int get_last_packet_snr()
+{
+	return lora_read_reg8(LORA_REG_SNR)  / 4;
+}
+
+static void radio_on_received(void *data, size_t size)
+{
+	PRINTF("[rssi: %d, snr %d] Lora received %s\n", get_last_packet_rssi(), get_last_packet_snr(), data);
+}
+
+void radio_receive()
+{
+	lora_receive(&lora_dev, radio_on_received);
 }

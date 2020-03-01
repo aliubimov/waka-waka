@@ -9,7 +9,6 @@
 
 static const char *s_send_button_tetx  = "Send";
 
-static lv_style_t msg_in_style;
 
 static lv_obj_t* waka_message_create(waka_message_t *msg, lv_obj_t *parent)
 {

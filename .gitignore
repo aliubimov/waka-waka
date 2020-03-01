@@ -64,3 +64,4 @@ simulator/main
 simulator/lora
 
 /Debug/
+/Release/

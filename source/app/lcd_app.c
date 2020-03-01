@@ -138,12 +138,12 @@ bool touch_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data) {
 	return false;
 }
 
-void register_touch() {
-    lv_indev_drv_init(&indev_drv);
+void register_touch(lv_indev_drv_t *drv) {
+    lv_indev_drv_init(drv);
     indev_drv.type = LV_INDEV_TYPE_POINTER;
     indev_drv.read_cb = touch_read;
 
-    lv_indev_drv_register(&indev_drv);
+    lv_indev_drv_register(drv);
 }
 
 static waka_message_t msg[15];
@@ -215,7 +215,7 @@ static void switch_to_main(waka_splash_screen_t *r)
 
 
 void dump_radio_state(lv_task_t *self) {
-	// PRINTF("radio status: %x\n", radio_read_reg(0x01));
+	radio_receive();
 }
 
 void app_run() {
@@ -234,8 +234,7 @@ void app_run() {
     disp_drv.flush_cb = lcd_flush;
 
     lv_disp_drv_register(&disp_drv);
-
-    register_touch();
+    register_touch(&indev_drv);
 
     lv_theme_t *th = lv_theme_material_init(0, NULL);
     lv_theme_set_current(th);

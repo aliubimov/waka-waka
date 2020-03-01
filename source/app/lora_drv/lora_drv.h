@@ -55,6 +55,10 @@
 #define LORA_REG_MODEM_CONFIG_2         0x1e
 #define LORA_REG_SYMB_TIMEOUT_LSB       0x1f
 
+#define LORA_REG_RSSI					0x1a
+#define LORA_REG_SNR					0x19
+
+
 typedef enum lora_result 
 {
     lrSuccess,
@@ -97,39 +101,39 @@ typedef struct lora_modem_config
 } lora_modem_config_t;
 
 
+typedef void (*lora_receive_cb_t)(void *data, size_t size);
 
 /*
- * \brief Initialize LoRA device and switch it to STANDBY mode.
+ * @brief Initialize LoRA device and switch it to STANDBY mode.
  */
 lora_result_t lora_init(const lora_dev_t *dev);
 
 /*
- * \brief Configure LoRA modem with provided settings
+ * @brief Configure LoRA modem with provided settings
  */
 lora_result_t lora_config(const lora_dev_t *dev, const lora_modem_config_t *config);
 
 
 /*
- * \brief Switch trasmiter to STANDBY mode. Aborts any opration that is in process
+ * @brief Switch transmitter to STANDBY mode. Aborts any opration that is in process
  */
 lora_result_t lora_enable(const lora_dev_t *dev);
 
 /*
- * \brief Switch transmiter to SLEEP mode
+ * @brief Switch transmitter to SLEEP mode
  */
 lora_result_t lora_disable(const lora_dev_t *dev);
 
 
 /*
- * \brief Set power output on RFO or PA_BOOST pin
- * \param power value in range 0-15, 20 enables PA_BOOST with max power +20 dBm
+ * @brief Set power output on RFO or PA_BOOST pin
+ * @param power value in range 0-15, 20 enables PA_BOOST with max power +20 dBm
  */
 lora_result_t lora_set_power(const lora_dev_t *dev, uint8_t power);
 
 lora_result_t lora_send(const lora_dev_t *dev, const lora_tx_request_t *req);
 
-
-lora_result_t lora_receive(const lora_dev_t *dev);
+lora_result_t lora_receive(const lora_dev_t *dev, lora_receive_cb_t callback);
 
 
 #endif

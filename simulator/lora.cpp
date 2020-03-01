@@ -77,8 +77,8 @@ int main()
 
     
     while (true) {
-        lora_receive(&dev);
-//        lora_send(&dev, &tx);
+//        lora_receive(&dev);
+        lora_send(&dev, &tx);
     }
 
     return 0;

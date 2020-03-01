@@ -14,7 +14,10 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
 find_package(SDL2 REQUIRED SDL2)
 include_directories(${SDL2_INCLUDE_DIRS})
 
+include_directories("../source")
+
 set(USER_INTERFACE
+    "../source/waka_conf.h"
     "../source/app/waka.c"
     "../source/app/logo.c"
     "../source/app/waka_splash.c"

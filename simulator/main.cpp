@@ -132,7 +132,7 @@ int main() {
 
     m->message_size = 150;
 
-    m->msg_to_send = "Ready for big party ?";
+//    m->msg_to_send = "Ready for big party ?";
     m->input_message_cb = show_input_screen;
     m->get_message_index = get_message_index;
 
@@ -150,6 +150,7 @@ int main() {
         usleep(5 * 1000);
         lv_tick_inc(5);
     }
+
 
     return 0;
 }

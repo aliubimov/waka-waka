@@ -36,8 +36,9 @@ msg_encoded_t* alloc_msg_buf();
 void free_msg_buf(msg_encoded_t* msg);
 void free_msg(msg_t* msg);
 
-msg_encoded_t* encode_msg(msg_t *msg);
+void create_msg(msg_t* msg, size_t device_name_size, const char *device_name, size_t msg_size, const char *txt);
 
+msg_encoded_t* encode_msg(msg_t *msg);
 msg_t* decode_msg(msg_encoded_t *msg);
 
 #if defined(__cplusplus)

@@ -39,6 +39,7 @@ static ili9341_handle_t handle;
 static lv_obj_t* screen;
 
 static touch_reading_t touch;
+static active_model_t model;
 
 void lcd_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t *color_p)
 {
@@ -136,6 +137,22 @@ void register_touch() {
     lv_indev_drv_register(&indev_drv);
 }
 
+static void on_user_input(input_message_screen_t *model) {
+    PRINTF("%s\n", lv_ta_get_text(model->input));
+}
+
+static void show_input_screen()
+{
+    lv_obj_del_async(screen);
+    waka_msg_list_screen_destory(&model);
+
+    input_message_screen_t *screen_model = waka_msg_input_screen_init(&model);
+    screen_model->on_screen_apply = on_user_input;
+
+    screen = waka_msg_input_screen_create(screen_model);
+
+    lv_scr_load(screen);
+}
 
 void usleep(int ms) {
 	while (--ms) {
@@ -162,7 +179,7 @@ static void switch_to_main(waka_splash_screen_t *r)
 	model.idx_first = 0;
 	model.idx_last = 14;
 	model.get_message_index = get_message_index;
-	model.input_message_cb = NULL;
+	model.input_message_cb = show_input_screen;
 
 	for (int i = 0; i < model.message_size; ++i) {
 		msg[i].text = "hello!";

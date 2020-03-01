@@ -6,15 +6,16 @@
  * This software may be modified and distributed under the terms
  * of the BSD license.  See the LICENSE file for details.
  */
+#include <touch_drv/touch_spi.h>
 #include "waka_conf.h"
-#include "touch_spi.h"
-
 #include "fsl_gpio.h"
 #include "fsl_edma.h"
 #include "fsl_lpspi.h"
 #include "fsl_lpspi_edma.h"
 
 #include "peripherals.h"
+
+#include "fsl_debug_console.h"
 
 void touch_init()
 {

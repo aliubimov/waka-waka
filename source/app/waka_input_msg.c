@@ -1,5 +1,6 @@
-#include "waka.h"
+#include "waka_conf.h"
 #include "waka_input_msg.h"
+#include "utils.h"
 
 #include <stdlib.h>
 
@@ -25,6 +26,7 @@ lv_obj_t* waka_msg_input_screen_create(input_message_screen_t *model)
 
     lv_obj_set_width(model->input, lv_obj_get_width(lv_scr_act()));
 
+    lv_ta_set_max_length(model->input, MAX_MESSAGE_SIZE - 1);
     lv_ta_set_text(model->input, "");
     lv_ta_set_placeholder_text(model->input, "Message...");
 
@@ -37,7 +39,7 @@ lv_obj_t* waka_msg_input_screen_create(input_message_screen_t *model)
 
 input_message_screen_t* waka_msg_input_screen_init(active_model_t *model)
 {
-    model->create_message_model = (input_message_screen_t*) malloc(sizeof(input_message_screen_t*));
+    model->create_message_model = (input_message_screen_t*) malloc(sizeof(input_message_screen_t));
     model->create_message_model->on_screen_apply = NULL;
 
     return model->create_message_model;

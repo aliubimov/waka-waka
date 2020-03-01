@@ -1,6 +1,7 @@
 #ifndef WAKA_INCLUDE_H
 #define WAKA_INCLUDE_H
 
+#include "waka_conf.h"
 #include "../../middleware/lvgl/lvgl.h"
 #include "waka_model.h"
 #include "waka_splash.h"
@@ -28,7 +29,7 @@ typedef struct _waka_message_list_screen
     lv_obj_t* input;
     lv_obj_t* send_button;
     size_t message_size;
-    const char * msg_to_send;
+    char msg_to_send[MAX_MESSAGE_SIZE];
 
     int idx_first;
     int idx_last;
@@ -43,6 +44,8 @@ typedef struct _waka_message_list_screen
 lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model);
 
 waka_message_list_screen_t* waka_msg_list_screen_init(active_model_t *model);
+
+void waka_msg_list_screen_set_text_to_send(waka_message_list_screen_t *model, const char *text);
 
 void waka_msg_list_screen_destory(active_model_t *model);
 

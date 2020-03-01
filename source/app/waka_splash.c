@@ -30,7 +30,7 @@ waka_splash_screen_t* waka_init_splash_screen_model(active_model_t *model) {
     return model->splash_model;
 }
 
-void waka_deinit_splash_screen_model(active_model_t *model)
+void waka_splash_screen_model_destory(active_model_t *model)
 {
     free(model->splash_model);
 }

@@ -103,9 +103,10 @@ lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model)
 
     // input text 
     model->input = lv_ta_create(root, NULL);
+    lv_ta_set_text(model->input, "");
+    lv_ta_set_placeholder_text(model->input, "Enter message");
     lv_ta_set_one_line(model->input, true);
     lv_ta_set_cursor_type(model->input, LV_CURSOR_NONE);
-    lv_ta_set_text(model->input, model->msg_to_send);
     lv_obj_set_user_data(model->input, model);
     lv_obj_set_event_cb(model->input, input_text_click_cb);
 
@@ -128,13 +129,23 @@ lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model)
     return root;
 }
 
+void waka_msg_list_screen_set_text_to_send(waka_message_list_screen_t *model, const char *text)
+{
+	lv_ta_set_text(model->input, text);
+}
+
+
 waka_message_list_screen_t* waka_msg_list_screen_init(active_model_t *model)
 {
     model->list_messages_model = (waka_message_list_screen_t*) malloc(sizeof(waka_message_list_screen_t));
+    memcpy(model->list_messages_model, 0, sizeof(waka_message_list_screen_t));
+
     return model->list_messages_model;
 }
 
+
 void waka_msg_list_screen_destory(active_model_t *model)
 {
+	if (model->list_messages_model->msg_to_send) free(model->list_messages_model->msg_to_send);
     free(model->list_messages_model);
 }

@@ -34,7 +34,7 @@ lv_obj_t* waka_splash_screen(waka_splash_screen_t *model);
 
 waka_splash_screen_t* waka_init_splash_screen_model(active_model_t *model);
 
-void waka_deinit_splash_screen_model(active_model_t *model);
+void waka_splash_screen_model_destory(active_model_t *model);
 
 #if defined(__cplusplus)
 }

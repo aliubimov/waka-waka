@@ -33,6 +33,7 @@
  * @brief   Application entry point.
  */
 #include <stdio.h>
+#include <touch_drv/touch_spi.h>
 #include "board.h"
 #include "peripherals.h"
 #include "pin_mux.h"
@@ -43,7 +44,6 @@
 
 #include "lcd_app.h"
 #include "lora_app.h"
-#include "app/trouch_drv/touch_spi.h"
 
 /*
  * @brief   Application entry point.

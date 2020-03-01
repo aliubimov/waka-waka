@@ -7,6 +7,7 @@
  * of the BSD license.  See the LICENSE file for details.
  */
 
+#include <touch_drv/touch_spi.h>
 #include "lcd_app.h"
 #include "ili9341_drv.h"
 #include "lora_app.h"
@@ -18,10 +19,9 @@
 #include "peripherals.h"
 
 #include "middleware/lvgl/lvgl.h"
+#include "middleware/lv_conf.h"
 
 #include "fsl_debug_console.h"
-
-#include "trouch_drv/touch_spi.h"
 
 #include "waka.h"
 
@@ -123,8 +123,17 @@ bool touch_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data) {
 
 	data->state = touch.is_pressed ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
 
+#if TOUCH_INVERT_X == 1
+	data->point.x = LV_VER_RES_MAX - touch.x;
+#else
 	data->point.x = touch.x;
+#endif
+
+#if TOUCH_INVERT_X == 1
+	data->point.y = LV_HOR_RES_MAX - touch.y;
+#else
 	data->point.y = touch.y;
+#endif
 
 	return false;
 }
@@ -137,9 +146,14 @@ void register_touch() {
     lv_indev_drv_register(&indev_drv);
 }
 
-static void on_user_input(input_message_screen_t *model) {
-    PRINTF("%s\n", lv_ta_get_text(model->input));
+static waka_message_t msg[15];
+
+static waka_message_t* get_message_index(int idx)
+{
+    return &msg[idx];
 }
+
+static void on_user_input(input_message_screen_t *m);
 
 static void show_input_screen()
 {
@@ -150,7 +164,26 @@ static void show_input_screen()
     screen_model->on_screen_apply = on_user_input;
 
     screen = waka_msg_input_screen_create(screen_model);
+    lv_scr_load(screen);
+}
 
+
+static void on_user_input(input_message_screen_t *m) {
+    char buf[MAX_MESSAGE_SIZE];
+	snprintf(buf, MAX_MESSAGE_SIZE, lv_ta_get_text(m->input));
+
+	lv_obj_del_async(screen);
+    waka_msg_input_screen_destory(&model);
+
+    waka_message_list_screen_t* screen_model = waka_msg_list_screen_init(&model);
+    screen_model->message_size = 15;
+    screen_model->idx_first = 0;
+    screen_model->idx_last = 14;
+    screen_model->get_message_index = get_message_index;
+    screen_model->input_message_cb = show_input_screen;
+	screen = waka_message_list_screen(screen_model);
+
+	waka_msg_list_screen_set_text_to_send(screen_model, buf);
     lv_scr_load(screen);
 }
 
@@ -160,39 +193,29 @@ void usleep(int ms) {
 	}
 }
 
-static waka_message_t msg[15];
-
-static waka_message_t* get_message_index(int idx)
-{
-    return &msg[idx];
-}
-
-
 static void switch_to_main(waka_splash_screen_t *r)
 {
 	lv_obj_del_async(screen);
+	waka_splash_screen_model_destory(&model);
 
-	// FIXME this is ugly
-	static waka_message_list_screen_t model;
-	model.msg_to_send = "hello :)";
-	model.message_size = 15;
-	model.idx_first = 0;
-	model.idx_last = 14;
-	model.get_message_index = get_message_index;
-	model.input_message_cb = show_input_screen;
-
-	for (int i = 0; i < model.message_size; ++i) {
+	for (int i = 0; i < 15; ++i) {
 		msg[i].text = "hello!";
 	};
 
-	screen = waka_message_list_screen(&model);
+    waka_message_list_screen_t* screen_model = waka_msg_list_screen_init(&model);
+    screen_model->message_size = 15;
+    screen_model->idx_first = 0;
+    screen_model->idx_last = 14;
+    screen_model->get_message_index = get_message_index;
+    screen_model->input_message_cb = show_input_screen;
 
+	screen = waka_message_list_screen(screen_model);
     lv_scr_load(screen);
 }
 
 
 void dump_radio_state(lv_task_t *self) {
-	PRINTF("radio status: %x\n", radio_read_reg(0x01));
+	// PRINTF("radio status: %x\n", radio_read_reg(0x01));
 }
 
 void app_run() {
@@ -219,16 +242,11 @@ void app_run() {
 
     th->style.kb.bg->text.font = &lv_font_roboto_16;
 
+    waka_splash_screen_t* screen_model = waka_init_splash_screen_model(&model);
+    screen_model->callback = switch_to_main;
+    screen_model->delay = 3000;
 
-//    input_message_screen_t model;
-//    waka_message_input_screen_screate(&model);
-//
-//    lv_scr_load(model.screen);
-    waka_splash_screen_t splash;
-    splash.delay = 3000;
-    splash.callback = switch_to_main;
-
-    screen = waka_splash_screen(&splash);
+    screen = waka_splash_screen(screen_model);
     lv_scr_load(screen);
 
 

@@ -12,6 +12,10 @@
 
 #include <stddef.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 typedef struct _msg {
 	size_t device_name_size;
 	char * device_name;
@@ -36,4 +40,7 @@ msg_encoded_t* encode_msg(msg_t *msg);
 
 msg_t* decode_msg(msg_encoded_t *msg);
 
+#if defined(__cplusplus)
+}
+#endif /* __cplusplus */
 #endif /* MSG_MSG_H_ */

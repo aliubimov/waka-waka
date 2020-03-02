@@ -158,9 +158,22 @@ int get_last_packet_snr()
 static void radio_on_received(void *data, size_t size)
 {
 	PRINTF("[rssi: %d, snr %d] Lora received %s\n", get_last_packet_rssi(), get_last_packet_snr(), data);
+
+	if (callback) callback(data, size);
 }
 
 void radio_receive()
 {
 	lora_receive(&lora_dev, radio_on_received);
+}
+
+
+void radio_send(char *data, size_t size)
+{
+	lora_tx_request_t req = {
+		.size = size,
+		.data = (uint8_t*) data
+	};
+
+	lora_send(&lora_dev, &req);
 }

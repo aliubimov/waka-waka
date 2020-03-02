@@ -134,9 +134,6 @@ lora_result_t lora_receive(const lora_dev_t *dev, lora_receive_cb_t callback)
         return lrTimeout;
     }
 
-//    printf("RSSI %d\n", dev->read_reg8(LORA_REG_RSSI) - 137);
-//    printf("SNR %d\n", dev->read_reg8(LORA_REG_SNR / 4));
-
     uint8_t fifo_p = dev->read_reg8(LORA_REG_FIFO_RX_CURRENT_ADDR);
     uint8_t packet_size = dev->read_reg8(LORA_REG_RX_NB_BYTES);
 

@@ -7,6 +7,8 @@
  * of the BSD license.  See the LICENSE file for details.
  */
 
+#include "waka_conf.h"
+
 #include <touch_drv/touch_spi.h>
 #include "lcd_app.h"
 #include "ili9341_drv.h"
@@ -40,6 +42,9 @@ static lv_obj_t* screen;
 
 static touch_reading_t touch;
 static active_model_t model;
+
+static int current_msg = 0;
+static waka_message_t msg[150];
 
 void lcd_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t *color_p)
 {
@@ -146,7 +151,6 @@ void register_touch(lv_indev_drv_t *drv) {
     lv_indev_drv_register(drv);
 }
 
-static waka_message_t msg[15];
 
 static waka_message_t* get_message_index(int idx)
 {
@@ -159,6 +163,7 @@ static void show_input_screen()
 {
     lv_obj_del_async(screen);
     waka_msg_list_screen_destory(&model);
+	unregister_receive_callback();
 
     input_message_screen_t *screen_model = waka_msg_input_screen_init(&model);
     screen_model->on_screen_apply = on_user_input;
@@ -167,6 +172,46 @@ static void show_input_screen()
     lv_scr_load(screen);
 }
 
+
+static void on_received_msg(void* data, size_t size)
+{
+	const char *received_msg = (char*) data;
+
+	waka_message_t *waka_message = &msg[current_msg++];
+
+	waka_message->from = malloc(strlen(received_msg) + 1);
+	strcpy(waka_message->from, received_msg);
+
+	received_msg += strlen(received_msg) + 1;
+
+	waka_message->text = malloc(strlen(received_msg) + 1);
+	strcpy(waka_message->text, received_msg);
+
+	lv_obj_t *new_msg = waka_message_create(waka_message, model.list_messages_model->page);
+	lv_page_focus(model.list_messages_model->page, new_msg, false);
+}
+
+static void on_send_msg(waka_message_list_screen_t *m)
+{
+	const char *text = lv_ta_get_text(m->input);
+
+	waka_message_t *waka_message = &msg[current_msg++];
+
+	waka_message->from = DEVICE_NAME;
+	waka_message->text = malloc(strlen(text) + 1);
+
+	strcpy(waka_message->text, text);
+
+	waka_message_create(waka_message, m->page);
+
+	lv_ta_set_text(m->input, "");
+
+	const size_t msg_size = strlen(waka_message->from) + 1 + strlen(waka_message->text) + 1;
+
+	char msg_to_send[msg_size];
+	sprintf(msg_to_send, "%s\0%s\0", waka_message->from, waka_message->text);
+	radio_send(msg_to_send, msg_size);
+}
 
 static void on_user_input(input_message_screen_t *m) {
     char buf[MAX_MESSAGE_SIZE];
@@ -178,13 +223,15 @@ static void on_user_input(input_message_screen_t *m) {
     waka_message_list_screen_t* screen_model = waka_msg_list_screen_init(&model);
     screen_model->message_size = 15;
     screen_model->idx_first = 0;
-    screen_model->idx_last = 14;
+    screen_model->idx_last = current_msg;
     screen_model->get_message_index = get_message_index;
     screen_model->input_message_cb = show_input_screen;
+    screen_model->send_message_cb = on_send_msg;
 	screen = waka_message_list_screen(screen_model);
 
 	waka_msg_list_screen_set_text_to_send(screen_model, buf);
     lv_scr_load(screen);
+    register_receive_callback(on_received_msg);
 }
 
 void usleep(int ms) {
@@ -198,19 +245,18 @@ static void switch_to_main(waka_splash_screen_t *r)
 	lv_obj_del_async(screen);
 	waka_splash_screen_model_destory(&model);
 
-	for (int i = 0; i < 15; ++i) {
-		msg[i].text = "hello!";
-	};
-
     waka_message_list_screen_t* screen_model = waka_msg_list_screen_init(&model);
     screen_model->message_size = 15;
     screen_model->idx_first = 0;
-    screen_model->idx_last = 14;
+    screen_model->idx_last = current_msg;
     screen_model->get_message_index = get_message_index;
     screen_model->input_message_cb = show_input_screen;
+    screen_model->send_message_cb = on_send_msg;
 
 	screen = waka_message_list_screen(screen_model);
     lv_scr_load(screen);
+
+    register_receive_callback(on_received_msg);
 }
 
 

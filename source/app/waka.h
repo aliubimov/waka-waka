@@ -11,15 +11,19 @@
 extern "C" {
 #endif
 
+struct _waka_message_list_screen;
 
 typedef struct
 {
     lv_obj_t* label;
-    const char *text;
+    char *from;
+    char *text;
     size_t text_size;
 } waka_message_t;
 
 typedef void (*input_message_cb_t)();
+
+typedef void (*send_message_cb_t)(struct _waka_message_list_screen *model);
 
 typedef waka_message_t* (*get_message_index_cb_t)(int idx);
 
@@ -36,6 +40,7 @@ typedef struct _waka_message_list_screen
 
     get_message_index_cb_t get_message_index;
     input_message_cb_t input_message_cb;
+    send_message_cb_t send_message_cb;
     
 } waka_message_list_screen_t;
 
@@ -49,6 +54,7 @@ void waka_msg_list_screen_set_text_to_send(waka_message_list_screen_t *model, co
 
 void waka_msg_list_screen_destory(active_model_t *model);
 
+lv_obj_t* waka_message_create(waka_message_t *msg, lv_obj_t *parent);
 
 #if defined(__cplusplus)
 }

@@ -30,6 +30,8 @@
 #define TOUCH_INVERT_X	0
 #define TOUCH_INVERT_Y	0
 
+#define DEVICE_NAME "Device1"
+
 #define MAX_MESSAGE_SIZE 256
 
 #endif /* WAKA_CONF_H_ */

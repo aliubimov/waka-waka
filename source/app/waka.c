@@ -10,7 +10,7 @@
 static const char *s_send_button_tetx  = "Send";
 
 
-static lv_obj_t* waka_message_create(waka_message_t *msg, lv_obj_t *parent)
+lv_obj_t* waka_message_create(waka_message_t *msg, lv_obj_t *parent)
 {
     // message container
     msg->label = lv_cont_create(parent, NULL);
@@ -20,9 +20,13 @@ static lv_obj_t* waka_message_create(waka_message_t *msg, lv_obj_t *parent)
     lv_cont_set_style(msg->label, LV_CONT_STYLE_MAIN, &lv_style_plain);
     lv_obj_set_parent_event(msg->label, true);
 
-    // receive time label 
+    // receive time label
+    char from_txt[128];
+    snprintf(from_txt, 128, "#ff0000 %s#\0", msg->from);
+
     lv_obj_t *l_receive_from = lv_label_create(msg->label, NULL);
-    lv_label_set_static_text(l_receive_from, "#eeaf00 2012-03-01 13:44# #ff0000 LoGiN#");
+//    lv_label_set_static_text(l_receive_from, "#eeaf00 2012-03-01 13:44# #ff0000 LoGiN#");
+    lv_label_set_text(l_receive_from, from_txt);
     lv_label_set_recolor(l_receive_from, true);
     lv_obj_set_parent_event(l_receive_from, true);
 
@@ -45,6 +49,17 @@ static void input_text_click_cb(lv_obj_t * obj, lv_event_t event) {
          break;
     }
 
+}
+
+
+static void send_button_click_cb(lv_obj_t *obj, lv_event_t event) {
+	waka_message_list_screen_t *model = (waka_message_list_screen_t*) obj->user_data;
+	 switch(event) {
+	     case LV_EVENT_CLICKED:
+	         if (model->send_message_cb)
+	             model->send_message_cb(model);
+	         break;
+	    }
 }
 
 /**
@@ -82,7 +97,6 @@ static void input_page_reload_cb(lv_obj_t * obj, lv_event_t event) {
  */
 }
 
-
 lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model)
 {
 
@@ -114,6 +128,8 @@ lv_obj_t* waka_message_list_screen(waka_message_list_screen_t *model)
     model->send_button = lv_btn_create(root, NULL);
     lv_obj_t *send_lbl = lv_label_create(model->send_button, NULL);
     lv_label_set_static_text(send_lbl, s_send_button_tetx);
+    lv_obj_set_event_cb(model->send_button, send_button_click_cb);
+    lv_obj_set_user_data(model->send_button, model);
 
     
     // align objects 

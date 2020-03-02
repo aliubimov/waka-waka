@@ -206,9 +206,9 @@ static void on_send_msg(waka_message_list_screen_t *m)
 
 	strcpy(waka_message->text, text);
 
-	waka_message_create(waka_message, m->page);
-
+	lv_obj_t* new_msg = waka_message_create(waka_message, m->page);
 	lv_ta_set_text(m->input, "");
+	lv_page_focus(m->page, new_msg, false);
 
 	const size_t msg_size = strlen(waka_message->from) + strlen(waka_message->text) + 2;
 
@@ -218,7 +218,6 @@ static void on_send_msg(waka_message_list_screen_t *m)
 	memcpy(&msg_to_send[strlen(waka_message->from) + 1], waka_message->text, strlen(waka_message->text) + 1);
 
 	radio_send(msg_to_send, msg_size);
-
 	radio_receive();
 }
 

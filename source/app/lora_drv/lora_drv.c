@@ -116,6 +116,7 @@ lora_result_t lora_send(const lora_dev_t *dev, const lora_tx_request_t *req)
 
 
     while (! (lora_get_irq_flags(dev) & LORA_REG_IRQ_FLAGS_TX_DONE)) { };
+    dev->write_reg8(LORA_REG_IRQ_FLAGS, 0xff);
 
     return lrSuccess;
 }

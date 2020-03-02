@@ -227,7 +227,7 @@ instance:
       - enableInDoze: 'true'
       - enableInDebug: 'true'
       - enableFastAccess: 'true'
-      - baudRate_Bps: '5000000'
+      - baudRate_Bps: '40000000'
       - phase: 'kFLEXIO_SPI_ClockPhaseFirstEdge'
       - dataMode: 'kFLEXIO_SPI_8BitMode'
     - interruptsCfg:
@@ -256,7 +256,7 @@ flexio_spi_master_config_t FLEXIO1_config = {
   .enableInDoze = true,
   .enableInDebug = true,
   .enableFastAccess = true,
-  .baudRate_Bps = 5000000,
+  .baudRate_Bps = 40000000,
   .phase = kFLEXIO_SPI_ClockPhaseFirstEdge,
   .dataMode = kFLEXIO_SPI_8BitMode
 };

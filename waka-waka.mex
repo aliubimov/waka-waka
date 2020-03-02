@@ -581,7 +581,7 @@
                            <setting name="enableInDoze" value="true"/>
                            <setting name="enableInDebug" value="true"/>
                            <setting name="enableFastAccess" value="true"/>
-                           <setting name="baudRate_Bps" value="5000000"/>
+                           <setting name="baudRate_Bps" value="40000000"/>
                            <setting name="phase" value="kFLEXIO_SPI_ClockPhaseFirstEdge"/>
                            <setting name="dataMode" value="kFLEXIO_SPI_8BitMode"/>
                         </struct>
@@ -674,7 +674,7 @@
             <component name="system" uuid="4a100408-9d44-4f77-a658-646454dbcdb7" type_id="system_54b53072540eeeb8f8e9343e71f28176">
                <config_set_global name="global_system_definitions"/>
             </component>
-            <component name="msg" uuid="4dad67fa-bbc3-47f4-8760-42150858b9f8" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
+            <component name="msg" uuid="9be2dcb2-6956-429c-bdad-27eb3bedd237" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
                <config_set_global name="global_messages"/>
             </component>
          </components>

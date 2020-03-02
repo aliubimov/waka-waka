@@ -218,6 +218,8 @@ static void on_send_msg(waka_message_list_screen_t *m)
 	memcpy(&msg_to_send[strlen(waka_message->from) + 1], waka_message->text, strlen(waka_message->text) + 1);
 
 	radio_send(msg_to_send, msg_size);
+
+	radio_receive();
 }
 
 static void on_user_input(input_message_screen_t *m) {

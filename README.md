@@ -6,7 +6,7 @@ WakaWaka
 WakaWaka is wireless communication device designed for cases, where no GSM currier coverage available. 
 It uses LoRA (Long Range Radio) which allows transmitting messages on a distance in few miles. 
 
-This implementation is based on (NXP i.MX RT1010 evaluation kit)[https://www.nxp.com/design/development-boards/i.mx-evaluation-and-development-boards/i.mx-rt1010-evaluation-kit:MIMXRT1010-EVK]  
+This implementation is based on [NXP i.MX RT1010 evaluation kit](https://www.nxp.com/design/development-boards/i.mx-evaluation-and-development-boards/i.mx-rt1010-evaluation-kit:MIMXRT1010-EVK).  
 
 
 Features used

@@ -206,10 +206,10 @@ static void on_send_msg(waka_message_list_screen_t *m)
 
 	lv_ta_set_text(m->input, "");
 
-	const size_t msg_size = strlen(waka_message->from) + 1 + strlen(waka_message->text) + 1;
+	const size_t msg_size = strlen(waka_message->from) + strlen(waka_message->text) + 2;
 
 	char msg_to_send[msg_size];
-	sprintf(msg_to_send, "%s\0%s\0", waka_message->from, waka_message->text);
+	sprintf(msg_to_send, "%s\0%s", waka_message->from, waka_message->text);
 	radio_send(msg_to_send, msg_size);
 }
 
@@ -260,9 +260,14 @@ static void switch_to_main(waka_splash_screen_t *r)
 }
 
 
-void dump_radio_state(lv_task_t *self) {
-	radio_receive();
+void init_lora_receive(lv_task_t *self) {
+	if (radio_read_status() == rsStandby) radio_receive();
 }
+
+void check_receive(lv_task_t *self) {
+	pull_if_available();
+}
+
 
 void app_run() {
 
@@ -295,7 +300,8 @@ void app_run() {
     lv_scr_load(screen);
 
 
-    lv_task_create(dump_radio_state, 1000, LV_TASK_PRIO_MID, NULL);
+    lv_task_create(init_lora_receive, 50, LV_TASK_PRIO_MID, NULL);
+    lv_task_create(check_receive, 100, LV_TASK_PRIO_MID, NULL);
 
     initialized = true;
 

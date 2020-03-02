@@ -53,6 +53,8 @@ int get_last_packet_snr();
 // FIXME don't do blocking, it is 21st century
 void radio_receive();
 
+void pull_if_available();
+
 void radio_send(char *data, size_t size);
 
 #endif /* LORA_APP_H_ */

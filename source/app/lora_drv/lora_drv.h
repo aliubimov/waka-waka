@@ -135,5 +135,8 @@ lora_result_t lora_send(const lora_dev_t *dev, const lora_tx_request_t *req);
 
 lora_result_t lora_receive(const lora_dev_t *dev, lora_receive_cb_t callback);
 
+lora_result_t lora_init_receive_async(const lora_dev_t *dev);
+
+uint8_t lora_is_received(const lora_dev_t *dev);
 
 #endif

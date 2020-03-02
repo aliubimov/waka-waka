@@ -121,13 +121,23 @@ lora_result_t lora_send(const lora_dev_t *dev, const lora_tx_request_t *req)
 }
 
 
-lora_result_t lora_receive(const lora_dev_t *dev, lora_receive_cb_t callback)
+lora_result_t lora_init_receive_async(const lora_dev_t *dev)
 {
-
     dev->write_reg8(LORA_REG_IRQ_FLAGS, 0xff);
     dev->write_reg8(LORA_REG_OP_MODE, LORA_OP_MODE_RX);
 
-    while (! (lora_get_irq_flags(dev) & (LORA_REG_IRQ_FLAGS_RX_DONE | LORA_REG_IRQ_FLAGS_RX_TIMEOUT))) { };
+	return lrSuccess;
+}
+
+uint8_t lora_is_received(const lora_dev_t *dev)
+{
+	return (lora_get_irq_flags(dev) & (LORA_REG_IRQ_FLAGS_RX_DONE | LORA_REG_IRQ_FLAGS_RX_TIMEOUT));
+}
+
+lora_result_t lora_receive(const lora_dev_t *dev, lora_receive_cb_t callback)
+{
+
+    while (! lora_is_received(dev)) { };
 
     if (lora_get_irq_flags(dev) & LORA_REG_IRQ_FLAGS_RX_TIMEOUT) 
     {

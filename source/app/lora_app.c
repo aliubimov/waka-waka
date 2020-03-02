@@ -164,9 +164,16 @@ static void radio_on_received(void *data, size_t size)
 
 void radio_receive()
 {
-	lora_receive(&lora_dev, radio_on_received);
+	lora_init_receive_async(&lora_dev);
 }
 
+
+void pull_if_available()
+{
+	if (lora_is_received(&lora_dev)) {
+		lora_receive(&lora_dev, radio_on_received);
+	}
+}
 
 void radio_send(char *data, size_t size)
 {

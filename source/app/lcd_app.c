@@ -46,6 +46,8 @@ static active_model_t model;
 static int current_msg = 0;
 static waka_message_t msg[150];
 
+static int should_refresh = 0;
+
 void lcd_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t *color_p)
 {
     /*Return if the area is out the screen*/
@@ -163,7 +165,7 @@ static void show_input_screen()
 {
     lv_obj_del_async(screen);
     waka_msg_list_screen_destory(&model);
-	unregister_receive_callback();
+    should_refresh = 0;
 
     input_message_screen_t *screen_model = waka_msg_input_screen_init(&model);
     screen_model->on_screen_apply = on_user_input;
@@ -187,8 +189,10 @@ static void on_received_msg(void* data, size_t size)
 	waka_message->text = malloc(strlen(received_msg) + 1);
 	strcpy(waka_message->text, received_msg);
 
-	lv_obj_t *new_msg = waka_message_create(waka_message, model.list_messages_model->page);
-	lv_page_focus(model.list_messages_model->page, new_msg, false);
+	if (should_refresh) {
+		lv_obj_t *new_msg = waka_message_create(waka_message, model.list_messages_model->page);
+		lv_page_focus(model.list_messages_model->page, new_msg, false);
+	}
 }
 
 static void on_send_msg(waka_message_list_screen_t *m)
@@ -231,7 +235,7 @@ static void on_user_input(input_message_screen_t *m) {
 
 	waka_msg_list_screen_set_text_to_send(screen_model, buf);
     lv_scr_load(screen);
-    register_receive_callback(on_received_msg);
+    should_refresh = 1;
 }
 
 void usleep(int ms) {
@@ -256,7 +260,7 @@ static void switch_to_main(waka_splash_screen_t *r)
 	screen = waka_message_list_screen(screen_model);
     lv_scr_load(screen);
 
-    register_receive_callback(on_received_msg);
+    should_refresh = 1;
 }
 
 
@@ -265,7 +269,7 @@ void init_lora_receive(lv_task_t *self) {
 }
 
 void check_receive(lv_task_t *self) {
-	pull_if_available();
+
 }
 
 
@@ -299,14 +303,14 @@ void app_run() {
     screen = waka_splash_screen(screen_model);
     lv_scr_load(screen);
 
-
-    lv_task_create(init_lora_receive, 50, LV_TASK_PRIO_MID, NULL);
-    lv_task_create(check_receive, 100, LV_TASK_PRIO_MID, NULL);
+    if (radio_read_status() == rsStandby) radio_receive();
+    register_receive_callback(on_received_msg);
 
     initialized = true;
 
     while (1)
     {
+    	pull_if_available();
 		lv_task_handler();
     }
 }

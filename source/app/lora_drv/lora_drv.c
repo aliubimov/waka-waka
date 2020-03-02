@@ -123,8 +123,7 @@ lora_result_t lora_send(const lora_dev_t *dev, const lora_tx_request_t *req)
 
 lora_result_t lora_init_receive_async(const lora_dev_t *dev)
 {
-    dev->write_reg8(LORA_REG_IRQ_FLAGS, 0xff);
-    dev->write_reg8(LORA_REG_OP_MODE, LORA_OP_MODE_RX);
+    dev->write_reg8(LORA_REG_OP_MODE, LORA_OP_MODE_RX_CONT);
 
 	return lrSuccess;
 }
@@ -137,30 +136,30 @@ uint8_t lora_is_received(const lora_dev_t *dev)
 lora_result_t lora_receive(const lora_dev_t *dev, lora_receive_cb_t callback)
 {
 
-    while (! lora_is_received(dev)) { };
+    if (lora_get_irq_flags(dev) & LORA_REG_IRQ_FLAGS_RX_DONE) {
+        dev->write_reg8(LORA_REG_IRQ_FLAGS, 0xff);
 
-    if (lora_get_irq_flags(dev) & LORA_REG_IRQ_FLAGS_RX_TIMEOUT) 
-    {
+        uint8_t fifo_p = dev->read_reg8(LORA_REG_FIFO_RX_CURRENT_ADDR);
+        uint8_t packet_size = dev->read_reg8(LORA_REG_RX_NB_BYTES);
+
+        dev->write_reg8(LORA_REG_FIFO_ADDR_PTR, fifo_p);
+
+        int i = 0, rx_size = packet_size;
+        char data[rx_size];
+
+        while (rx_size) {
+           uint8_t d = dev->read_reg8(LORA_REG_FIFO);
+           data[i++] = d;
+
+           --rx_size;
+        }
+
+
+        callback(&data, packet_size);
+
+        return lrSuccess;
+    } else {
+        dev->write_reg8(LORA_REG_IRQ_FLAGS, 0xff);
         return lrTimeout;
     }
-
-    uint8_t fifo_p = dev->read_reg8(LORA_REG_FIFO_RX_CURRENT_ADDR);
-    uint8_t packet_size = dev->read_reg8(LORA_REG_RX_NB_BYTES);
-
-    dev->write_reg8(LORA_REG_FIFO_ADDR_PTR, fifo_p);
-
-    int i = 0, rx_size = packet_size;
-    char data[rx_size];
-
-    while (rx_size)
-    {
-       uint8_t d = dev->read_reg8(LORA_REG_FIFO);
-       data[i++] = d;
-
-       --rx_size;
-    }
-
-    callback(&data, packet_size);
-
-    return lrSuccess;
 }

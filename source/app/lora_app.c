@@ -157,7 +157,7 @@ int get_last_packet_snr()
 
 static void radio_on_received(void *data, size_t size)
 {
-	PRINTF("[rssi: %d, snr %d] Lora received %s\n", get_last_packet_rssi(), get_last_packet_snr(), data);
+	PRINTF("[rssi: %d, snr %d, size %d] Lora received %s\n", get_last_packet_rssi(), get_last_packet_snr(), size, data);
 
 	if (callback) callback(data, size);
 }

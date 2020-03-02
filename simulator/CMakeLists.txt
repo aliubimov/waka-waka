@@ -25,11 +25,20 @@ set(USER_INTERFACE
     "../source/app/waka_settings.c"
     )
 
+
+set(LORA_SRC
+    "../source/app/msg/waka_msg.pb.c"
+    "../source/app/msg/waka_pb.c"
+    "../source/app/msg/pb_common.c"
+    "../source/app/msg/pb_encode.c"
+    "../source/app/msg/pb_decode.c"
+    )
+
 add_executable(main main.cpp terminus.c ${USER_INTERFACE} ${SOURCES} ${INCLUDES})
 
 target_link_libraries(main PRIVATE SDL2 )
 
-add_executable(lora lora.cpp ${LORA_DRV_SRC} ${LORA_DRV_INCL})
+add_executable(lora lora.cpp ${LORA_DRV_SRC} ${LORA_DRV_INCL} ${LORA_SRC})
 
-target_link_libraries(lora PRIVATE mpsse )
+target_link_libraries(lora PRIVATE mpsse)
 target_compile_options(lora PRIVATE "-DLIBFTDI1=1")

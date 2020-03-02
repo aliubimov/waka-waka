@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <cstring>
-#include <unistd.h>
-
 #include <string>
+#include <unistd.h>
 
 extern "C" {
   #include <mpsse.h>
   #include "lora_drv/lora_drv.h"
+  #include "app/msg/waka_msg.h"
 }
 
 
@@ -71,7 +71,6 @@ void lora_receive_cb(void *data, size_t size)
     msg += strlen(msg) + 1;
     printf("\tmsg: %s\n", msg);
 
-
     using namespace std::literals::string_literals;
 
     static int i = 0;
@@ -84,7 +83,7 @@ void lora_receive_cb(void *data, size_t size)
         .size = 17
     };
 
-    lora_enable(&dev);
+    usleep(500000);
     lora_send(&dev, &tx);
     printf("Sent %d\n", i);
 
@@ -94,6 +93,26 @@ void lora_receive_cb(void *data, size_t size)
 int main()
 {
 
+    uint8_t buffer[128];
+    size_t message_length;
+
+    WakaMessage m = WakaMessage_init_zero;
+    const char *dn = "asd";
+    m.device_name.arg = (void*) dn;
+    m.device_name.funcs.encode = encode_va_string;
+
+    pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
+    pb_encode(&stream, WakaMessage_fields, &m);
+    message_length = stream.bytes_written;
+
+
+    WakaMessage rec = WakaMessage_init_zero;
+    rec.device_name.funcs.decode = decode_va_string;
+
+    pb_istream_t stream_r = pb_istream_from_buffer(buffer, message_length);
+    pb_decode(&stream_r, WakaMessage_fields, &rec);
+
+    printf("vv: %s %s\n", rec.device_name.arg, rec.text.arg);
 
     
     lora_init(&dev);
@@ -117,3 +136,4 @@ int main()
 
     return 0;
 }
+

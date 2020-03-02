@@ -1,0 +1,5 @@
+WakaFrame.payload max_size:128
+
+
+#WakaMessage.device_name max_size:16
+#WakaMessage.text max_size:256

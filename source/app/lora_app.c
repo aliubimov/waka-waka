@@ -182,5 +182,7 @@ void radio_send(char *data, size_t size)
 		.data = (uint8_t*) data
 	};
 
+	lora_enable(&lora_dev);
+
 	lora_send(&lora_dev, &req);
 }

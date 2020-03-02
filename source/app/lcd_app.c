@@ -213,7 +213,10 @@ static void on_send_msg(waka_message_list_screen_t *m)
 	const size_t msg_size = strlen(waka_message->from) + strlen(waka_message->text) + 2;
 
 	char msg_to_send[msg_size];
-	sprintf(msg_to_send, "%s\0%s", waka_message->from, waka_message->text);
+	memset(&msg_to_send, 0, msg_size);
+	memcpy(&msg_to_send[0], waka_message->from, strlen(waka_message->from) + 1);
+	memcpy(&msg_to_send[strlen(waka_message->from) + 1], waka_message->text, strlen(waka_message->text) + 1);
+
 	radio_send(msg_to_send, msg_size);
 }
 

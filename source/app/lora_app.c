@@ -185,4 +185,6 @@ void radio_send(char *data, size_t size)
 	lora_enable(&lora_dev);
 
 	lora_send(&lora_dev, &req);
+
+	lora_enable(&lora_dev);
 }

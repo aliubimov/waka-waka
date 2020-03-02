@@ -59,7 +59,7 @@ SCK -> J26[4]
 
 LED -> J60[8]
 
-SDO(MISO) -> J57[4]
+SDO(MISO) -> J56[4]
 
 
 Touch Pin Setup
